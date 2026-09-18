@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "settings $*" >> /data/property/settings.log 2>/dev/null
+[ "$1" = "get" ] && echo "null"
+exit 0

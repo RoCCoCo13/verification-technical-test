@@ -1,0 +1,6 @@
+#!/bin/sh
+case "$1 $2" in
+  "list packages") printf 'package:com.oem.telematics\npackage:com.android.car\npackage:com.android.car.settings\npackage:com.oem.hvac\npackage:com.oem.charging\npackage:android\n';;
+  "path com.oem.telematics") echo "package:/system/priv-app/Telematics/Telematics.apk";;
+  *) echo "pm: unsupported: $*" >&2; exit 1;;
+esac

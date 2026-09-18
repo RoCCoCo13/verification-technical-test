@@ -1,0 +1,8 @@
+TCU-GW-2 software release TCU_GW2_SW_4.12.0 (bench build)
+------------------------------------------------------------
+New
+ * Remote charging control (CHARGING_START / CHARGING_STOP) over telematics.
+ * HVAC pre-conditioning temperature set point now forwarded to BCM-4.
+Known issues
+ * KI-217: Body ECU heartbeat occasionally exceeds 100 ms on the bench (scheduler
+           contention on the BCM-4 simulator). Cosmetic, no functional impact.

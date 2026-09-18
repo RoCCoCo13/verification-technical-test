@@ -1,0 +1,10 @@
+# The whole bench is consumed by Linux containers (shell entrypoints, the Android
+# /system/bin stubs, Python services). Force LF in the working tree on every
+# platform so a checkout on Windows cannot break the image build with CRLF.
+* text=auto eol=lf
+
+# Binary artefacts: never touch these.
+*.pcap  binary
+*.png   binary
+*.jpg   binary
+*.zip   binary

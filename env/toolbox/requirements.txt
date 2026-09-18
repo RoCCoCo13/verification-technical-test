@@ -1,0 +1,9 @@
+robotframework==7.1
+robotframework-requests==0.9.7
+requests==2.32.3
+grpcio==1.66.1
+grpcio-tools==1.66.1
+protobuf==5.28.2
+scapy==2.6.0
+robotframework-jsonlibrary==0.5
+jsonschema==4.23.0

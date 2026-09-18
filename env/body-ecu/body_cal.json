@@ -1,0 +1,14 @@
+{
+  "calibration_id": "BCM4_CAL_P1.3.0",
+  "variant": "EU_LHD",
+  "door_actuator_time_ms": [250, 800],
+  "hvac_temp_raw_min": 32,
+  "hvac_temp_raw_max": 56,
+  "hvac_reset_on_door_unlock": true,
+  "charging_soc_step_period_s": 3.0,
+  "charging_power_kw_x10": 110,
+  "heartbeat_jitter_ms": [1, 30],
+  "heartbeat_slow_every_n": 17,
+  "heartbeat_slow_extra_ms": 140,
+  "initial_soc_percent": 42
+}

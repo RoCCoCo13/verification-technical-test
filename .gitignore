@@ -1,0 +1,19 @@
+# --- Secrets: never commit ---------------------------------------------------
+.env
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- Generated gRPC stubs (rebuilt from env/proto/vehicle_ecu.proto at run time)
+robot/libraries/generated/
+
+# --- Editor / OS -------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Bench runtime output (traces/logs, traces/pcap) is handled by traces/.gitignore

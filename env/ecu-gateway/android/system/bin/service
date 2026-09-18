@@ -1,0 +1,2 @@
+#!/bin/sh
+[ "$1" = "list" ] && printf 'Found 6 services:\n0\tactivity: [android.app.IActivityManager]\n1\tconnectivity: [android.net.IConnectivityManager]\n2\tpackage: [android.content.pm.IPackageManager]\n3\tpower: [android.os.IPowerManager]\n4\ttelematics: [com.oem.telematics.ITelematics]\n5\tvehicle: [android.hardware.automotive.vehicle.IVehicle]\n'

@@ -1,0 +1,128 @@
+# Automotive validation bench - AAOS gateway ECU + cloud backend + Body ECU.
+# Start:   docker compose up -d --build
+# Status:  docker compose ps
+# Stop:    docker compose down -v
+name: vehicle-bench
+
+networks:
+  vehicle-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+services:
+  # ---------------------------------------------------------------- vehicle
+  ecu-gateway:
+    build: { context: ./env, dockerfile: ecu-gateway/Dockerfile }
+    image: vehicle-bench/ecu-gateway:1.0
+    container_name: ecu-gateway
+    hostname: tcu_gw2
+    networks:
+      vehicle-net: { ipv4_address: 172.28.0.10 }
+    ports:
+      - "${ADB_PORT:-5555}:5555"           # adb connect localhost:5555
+      - "${TCU_TELEMATICS_PORT:-8081}:8081" # telematics receiver (normally vehicle-internal)
+    environment:
+      BODY_ECU_ADDR: body-ecu:50051
+      BACKEND_URL: http://backend:8000
+    volumes:
+      - ./traces/logs:/data/log/dlt      # tcu.dlt visible on the host too
+    depends_on:
+      body-ecu: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  body-ecu:
+    build: { context: ./env, dockerfile: body-ecu/Dockerfile }
+    image: vehicle-bench/body-ecu:1.0
+    container_name: body-ecu
+    hostname: bcm4
+    networks:
+      vehicle-net: { ipv4_address: 172.28.0.30 }
+    ports:
+      - "${BODY_GRPC_PORT:-50051}:50051"   # gRPC, exposed for direct inspection (grpcurl / Python)
+    volumes:
+      - ./traces/logs:/var/log/dlt
+
+  # ------------------------------------------------------------------ cloud
+  backend:
+    build: { context: ./env, dockerfile: backend/Dockerfile }
+    image: vehicle-bench/backend:1.0
+    container_name: backend
+    hostname: cvb-api
+    networks:
+      vehicle-net: { ipv4_address: 172.28.0.20 }
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      VEHICLE_API_KEY: ${VEHICLE_API_KEY:-dev-key-001}
+      TCU_URL: http://ecu-gateway:8081
+    volumes:
+      - ./traces/logs:/var/log/dlt
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ---------------------------------------------------------------- capture
+  # Packet taps. Each shares the network namespace of one ECU so it sees
+  # everything that ECU sends/receives. Files rotate every 2 minutes.
+  capture-tcu:
+    build: { context: ./env, dockerfile: capture/Dockerfile }
+    image: vehicle-bench/capture:1.0
+    container_name: capture-tcu
+    network_mode: "service:ecu-gateway"
+    cap_add: [NET_RAW, NET_ADMIN]
+    environment: { CAPTURE_PREFIX: tcu, ROTATE_SECONDS: "120" }
+    volumes:
+      - ./traces:/traces
+    depends_on: [ecu-gateway]
+
+  capture-cloud:
+    image: vehicle-bench/capture:1.0
+    container_name: capture-cloud
+    network_mode: "service:backend"
+    cap_add: [NET_RAW, NET_ADMIN]
+    environment: { CAPTURE_PREFIX: cloud, ROTATE_SECONDS: "120" }
+    volumes:
+      - ./traces:/traces
+    depends_on: [backend, capture-tcu]
+
+  # ------------------------------------------------------------------ tools
+  # On-demand only:  docker compose run --rm scenario-runner
+  scenario-runner:
+    build: { context: ./env, dockerfile: scenario-runner/Dockerfile }
+    image: vehicle-bench/scenario-runner:1.0
+    profiles: [tools]
+    network_mode: "service:ecu-gateway"
+    cap_add: [NET_RAW, NET_ADMIN]
+    environment:
+      BACKEND_URL: http://backend:8000
+      VEHICLE_API_KEY: ${VEHICLE_API_KEY:-dev-key-001}
+    volumes:
+      - ./traces:/traces
+
+  # Tester workstation with adb + tshark + Robot Framework, attached to the vehicle network.
+  # Inside it use service names, not localhost: backend:8000, ecu-gateway:5555, body-ecu:50051.
+  #   docker compose run --rm toolbox                 -> interactive shell (adb pre-connected)
+  #   docker compose run --rm toolbox adb shell getprop ro.product.model
+  toolbox:
+    build: { context: ./env, dockerfile: toolbox/Dockerfile }
+    image: vehicle-bench/toolbox:1.0
+    profiles: [tools]
+    networks: [vehicle-net]
+    environment:
+      BACKEND_URL: http://backend:8000
+      ADB_SERIAL: ecu-gateway:5555
+      ANDROID_SERIAL: ecu-gateway:5555      # lets plain `adb shell` target the gateway
+      BODY_ECU_ADDR: body-ecu:50051
+      VEHICLE_API_KEY: ${VEHICLE_API_KEY:-dev-key-001}
+    volumes:
+      - ./traces:/traces
+      - ./:/work
+    working_dir: /work

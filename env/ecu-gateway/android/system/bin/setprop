@@ -1,0 +1,3 @@
+#!/bin/sh
+mkdir -p /data/property
+echo "$1=$2" >> /data/property/runtime.prop

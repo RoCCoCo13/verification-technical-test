@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Subset of Android logcat: -d (dump), -c (clear), -v (ignored), -s TAG / TAG:LEVEL filters, -t N."""
+import sys, time, os, re
+LOG = "/data/log/logcat.log"
+args = sys.argv[1:]
+dump = clear = False; tail = None; filters = []
+i = 0
+while i < len(args):
+    a = args[i]
+    if a == "-d": dump = True
+    elif a == "-c": clear = True
+    elif a in ("-v", "-b", "-f"): i += 1
+    elif a == "-s": pass
+    elif a == "-t": tail = int(args[i + 1]); i += 1; dump = True
+    elif a.startswith("-"): pass
+    else: filters.append(a)
+    i += 1
+if clear:
+    open(LOG, "w").close(); sys.exit(0)
+LEVELS = "VDIWEF"
+if "-s" in sys.argv[1:] and not any(f.startswith("*") for f in filters):
+    filters.append("*:S")
+def keep(line):
+    if not filters: return True
+    m = re.match(r"\S+ \S+ +\d+ +\d+ ([VDIWEF]) ([^:]+):", line)
+    if not m: return False
+    lvl, tag = m.group(1), m.group(2).strip()
+    star = None
+    for f in filters:
+        t, _, l = f.partition(":")
+        l = l or "V"
+        if t == "*": star = l; continue
+        if t == tag:
+            return l != "S" and LEVELS.index(lvl) >= LEVELS.index(l)
+    if star is None: return True
+    return star != "S" and LEVELS.index(lvl) >= LEVELS.index(star)
+print("--------- beginning of main")
+try:
+    with open(LOG, "r", errors="replace") as fh:
+        lines = [l for l in fh.readlines() if keep(l)]
+        if tail is not None: lines = lines[-tail:]
+        sys.stdout.write("".join(lines)); sys.stdout.flush()
+        if dump: sys.exit(0)
+        while True:
+            l = fh.readline()
+            if l:
+                if keep(l): sys.stdout.write(l); sys.stdout.flush()
+            else:
+                time.sleep(0.2)
+except (KeyboardInterrupt, BrokenPipeError):
+    pass

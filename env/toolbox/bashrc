@@ -1,0 +1,20 @@
+# Tester workstation shell: print how to reach the bench from INSIDE this container and pre-connect adb.
+export PS1='toolbox:\w\$ '
+export ANDROID_SERIAL="${ADB_SERIAL:-ecu-gateway:5555}"
+cat <<BANNER
+
+  vehicle-bench toolbox  (adb, tshark, robot, grpcio, curl, jq)
+  You are INSIDE the vehicle network: 'localhost' here is this container, NOT your machine.
+
+    REST backend   ${BACKEND_URL:-http://backend:8000}        (header: X-API-Key: ${VEHICLE_API_KEY:-dev-key-001})
+    ADB gateway    ${ADB_SERIAL:-ecu-gateway:5555}              (adb connect ${ADB_SERIAL:-ecu-gateway:5555}; ANDROID_SERIAL is set, so plain 'adb shell' works)
+    Body ECU gRPC  ${BODY_ECU_ADDR:-body-ecu:50051}
+    Traces         /traces/logs (DLT), /traces/pcap (captures)       Repo: /work
+
+BANNER
+if adb connect "$ANDROID_SERIAL" >/dev/null 2>&1 && [ "$(adb get-state 2>/dev/null)" = "device" ]; then
+  echo "  adb: connected to $ANDROID_SERIAL ($(adb shell getprop ro.product.model 2>/dev/null))"
+else
+  echo "  adb: could not connect to $ANDROID_SERIAL - is the bench up? (docker compose ps)"
+fi
+echo

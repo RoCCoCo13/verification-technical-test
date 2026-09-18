@@ -1,0 +1,6 @@
+# generated at runtime
+logs/*
+!logs/.gitkeep
+pcap/*
+!reference/
+!samples/

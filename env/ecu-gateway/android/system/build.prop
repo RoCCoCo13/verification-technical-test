@@ -1,0 +1,28 @@
+# begin build properties (bench image)
+ro.build.id=UQ1A.240205.004
+ro.build.display.id=aaos_tcu_gw2-userdebug 14 UQ1A.240205.004 eng.bench
+ro.build.version.sdk=34
+ro.build.version.release=14
+ro.build.version.security_patch=2024-02-05
+ro.build.type=userdebug
+ro.build.tags=dev-keys
+ro.build.fingerprint=OEM/aaos_tcu_gw2/tcu_gw2:14/UQ1A.240205.004/eng.bench:userdebug/dev-keys
+ro.build.description=aaos_tcu_gw2-userdebug 14 UQ1A.240205.004 eng.bench
+ro.product.brand=OEM
+ro.product.name=aaos_tcu_gw2
+ro.product.model=TCU-GW-2
+ro.product.device=tcu_gw2
+ro.product.manufacturer=OEM Automotive
+ro.product.cpu.abi=x86_64
+ro.hardware=tcu_gw2
+ro.hardware.type=automotive
+ro.boot.serialno=TCUGW2BENCH0042
+ro.oem.tcu.sw_version=TCU_GW2_SW_4.12.0
+ro.oem.tcu.calibration=/vendor/etc/calibration/tcu_cal.json
+ro.oem.body_ecu.addr=body-ecu:50051
+ro.oem.backend.url=http://backend:8000
+persist.sys.timezone=Europe/Berlin
+persist.sys.locale=en-US
+ro.debuggable=1
+ro.secure=0
+# end build properties

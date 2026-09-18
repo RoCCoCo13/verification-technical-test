@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import sys, json, os, time, urllib.request
+svc = sys.argv[1] if len(sys.argv) > 1 else ""
+def vhal():
+    try: return json.load(open("/data/vendor/vhal/props.json"))
+    except Exception: return {}
+if svc in ("vehicle", "android.hardware.automotive.vehicle.IVehicle/default"):
+    v = vhal()
+    print("VHAL property snapshot (vendor.oem.vhal@2.0)")
+    print(f"  last_sync: {v.get('LAST_SYNC_UTC')}  seq: {v.get('STATE_SEQ')}  body_ecu_online: {v.get('BODY_ECU_ONLINE')}")
+    ids = {"DOOR_LOCK": 0x16200B02, "HVAC_POWER_ON": 0x15400510, "HVAC_TEMPERATURE_SET": 0x15600503,
+           "HVAC_TEMPERATURE_CURRENT": 0x15600502, "EV_CHARGE_STATE": 0x11400F0F, "EV_BATTERY_LEVEL": 0x11600309,
+           "EV_CHARGE_TARGET": 0x11400F10, "EV_CHARGE_POWER_KW": 0x11600F11}
+    for k, pid in ids.items():
+        print(f"  Property: 0x{pid:08X} ({k:<24}) value={v.get(k)}")
+elif svc in ("telematics", "com.oem.telematics"):
+    try:
+        data = json.load(urllib.request.urlopen("http://127.0.0.1:8081/telematics/state", timeout=2))
+        print("TELEMATICS SERVICE (com.oem.telematics)")
+        for k in ("sw_version", "uptime_s", "ecu_online", "queue_depth", "commands_seen"):
+            print(f"  {k}: {data.get(k)}")
+        print("  journal: /data/misc/telematics/command_journal.jsonl")
+    except Exception as e:
+        print(f"Can't find service: telematics ({e})")
+elif svc == "connectivity":
+    print("Connectivity service state:\n  Active default network: 100\n  NetworkAgentInfo [MOBILE (LTE) - 100] validated\n  Body ECU link: 172.28.0.30:50051 (ethernet backbone)")
+elif svc in ("", "-l"):
+    print("Currently running services:\n  activity\n  connectivity\n  package\n  power\n  telematics\n  vehicle")
+else:
+    print(f"Can't find service: {svc}")

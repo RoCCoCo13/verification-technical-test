@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "reboot ignored on bench (use docker compose restart ecu-gateway)"

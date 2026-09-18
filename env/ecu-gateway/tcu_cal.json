@@ -1,0 +1,24 @@
+{
+  "calibration_id": "TCU_GW2_CAL_P4.12.0",
+  "vin": "WVGZZZ5NZTW000042",
+  "market": "EU",
+  "command_map": {
+    "LOCK": "door_lock",
+    "UNLOCK": "door_unlock",
+    "CLIMATE_START": "hvac_start",
+    "CLIMATE_STOP": "hvac_stop",
+    "CHARGING_START": "charge_start",
+    "CHARGE_STOP": "charge_stop"
+  },
+  "door_lock_ack_timeout_ms": 600,
+  "hvac_ack_timeout_ms": 1500,
+  "charging_ack_timeout_ms": 1500,
+  "hvac_temp_scale": 2,
+  "hvac_temp_quantize": "floor_integer",
+  "state_poll_period_s": 5.0,
+  "state_poll_timeout_ms": 1000,
+  "sync_after_command": true,
+  "heartbeat_period_s": 2.0,
+  "heartbeat_timeout_ms": 1000,
+  "heartbeat_warn_latency_ms": 100
+}

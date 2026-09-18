@@ -1,0 +1,7 @@
+#!/bin/sh
+echo "$(date '+%m-%d %H:%M:%S.000') 1834  1834 I ActivityManager: am $*" >> /data/log/logcat.log
+case "$1" in
+  start) echo "Starting: Intent { $* }";;
+  broadcast) echo "Broadcasting: Intent { $* }"; echo "Broadcast completed: result=0";;
+  *) echo "am: unsupported subcommand '$1'" >&2; exit 1;;
+esac
