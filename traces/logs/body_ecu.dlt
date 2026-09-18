@@ -2449,3 +2449,8 @@
 2026-09-18T08:43:46.841755Z 002088.245 BCM4 BODY STAT DEBUG 0x0991 GetBodyState served seq=0 doors_locked=True hvac=False chg=IDLE soc=42
 2026-09-18T08:43:51.877486Z 002093.281 BCM4 BODY STAT DEBUG 0x0992 GetBodyState served seq=0 doors_locked=True hvac=False chg=IDLE soc=42
 2026-09-18T08:43:56.914773Z 002098.319 BCM4 BODY STAT DEBUG 0x0993 GetBodyState served seq=0 doors_locked=True hvac=False chg=IDLE soc=42
+2026-09-18T08:47:10.992575Z 000142.088 BCM4 BODY STAT DEBUG 0x0074 GetBodyState served seq=12 doors_locked=True hvac=False chg=IDLE soc=42
+2026-09-18T08:47:16.053773Z 000147.149 BCM4 BODY STAT DEBUG 0x0075 GetBodyState served seq=12 doors_locked=True hvac=False chg=IDLE soc=42
+2026-09-18T08:47:21.094568Z 000152.190 BCM4 BODY STAT DEBUG 0x0076 GetBodyState served seq=12 doors_locked=True hvac=False chg=IDLE soc=42
+2026-09-18T08:47:26.140340Z 000157.237 BCM4 BODY STAT DEBUG 0x0077 GetBodyState served seq=12 doors_locked=True hvac=False chg=IDLE soc=42
+2026-09-18T08:47:31.180439Z 000162.278 BCM4 BODY STAT DEBUG 0x0078 GetBodyState served seq=12 doors_locked=True hvac=False chg=IDLE soc=42

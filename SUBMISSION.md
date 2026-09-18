@@ -210,6 +210,11 @@ being told:
   state and REQ-LCK-003 owns the reported outcome and the consistency between them, which is what
   the requirements actually say.
 
+**CI validated, not assumed.** I ran the pipeline's exact sequence against a bench torn down and
+rebuilt from scratch (`docker compose down -v` → `up --build --wait` → wait for the first state
+report → build the tester images → capture the scenarios → run the suite → render the summary). It
+reproduces the same findings on a cold bench, so the workflow is not a file that merely looks right.
+
 **Time spent:** approximately 4 hours, within the suggested 3–5 hour window.
 
 ---
