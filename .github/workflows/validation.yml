@@ -1,0 +1,128 @@
+name: Vehicle bench validation
+
+# Runs the full regression suite against a bench started from scratch on the
+# runner. No manual step, no self-hosted runner, no secrets: the bench is built
+# from this repository.
+#
+# A red run is the expected outcome on release TCU_GW2_SW_4.12.0. The suite
+# finds real defects (see docs/rca/), and docs/DELIVERABLES.md states that a
+# pipeline going red because the tests found them is the correct result. The
+# artefacts are uploaded either way, so the report is always available.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Robot Framework regression suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out the bench and the suite
+        uses: actions/checkout@v4
+
+      # The runner has no port clash, so the bench keeps its documented default
+      # ports. The suite addresses every node by Docker Compose service name
+      # from inside the toolbox container, so published ports are irrelevant to
+      # it either way (robot/variables/bench_toolbox.py).
+      - name: Start the bench
+        run: docker compose up -d --build --wait
+
+      - name: Show bench status
+        run: docker compose ps
+
+      # `--wait` gates on the health checks, which only prove the HTTP endpoints
+      # are up. The backend additionally needs the gateway's first state report
+      # before /vehicle/status is meaningful; it arrives on the 5 s poll period.
+      - name: Wait for the vehicle to report its state
+        run: |
+          for attempt in $(seq 1 30); do
+            source=$(curl -fsS -H "X-API-Key: ${VEHICLE_API_KEY}" \
+              http://localhost:8000/vehicle/status | jq -r '.source // "none"') || source="none"
+            if [ "$source" = "telematics_report" ]; then
+              echo "vehicle reported its state after ${attempt} attempt(s)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::the vehicle never reported its state; the bench did not come up correctly"
+          docker compose logs --tail=100
+          exit 1
+        env:
+          VEHICLE_API_KEY: dev-key-001
+
+      - name: Build the tester images
+        run: docker compose --profile tools build
+
+      # One clean PCAP per scenario, captured from inside the gateway network
+      # namespace so all three legs land in one file. The 05_network suite reads
+      # them; without this step it would fall back to traces/samples/ and say so.
+      - name: Capture the end-to-end scenarios
+        run: docker compose run --rm --no-deps -e SCENARIO_LABEL=ci scenario-runner
+
+      # Robot exits non-zero when tests fail, which fails the job by design.
+      - name: Run the regression suite
+        run: |
+          docker compose run --rm --no-deps toolbox \
+            robot --pythonpath robot/libraries \
+                  --variablefile robot/variables/bench_toolbox.py \
+                  --outputdir results \
+                  --xunit xunit.xml \
+                  robot/tests
+
+      - name: Upload Robot Framework reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-reports
+          path: |
+            results/report.html
+            results/log.html
+            results/output.xml
+            results/xunit.xml
+          if-no-files-found: error
+
+      # The evidence behind any failure: the three DLT logs and the scenario
+      # captures the network suite analysed. These are what an RCA quotes.
+      - name: Upload bench evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-evidence
+          path: |
+            traces/logs/*.dlt
+            traces/pcap/scenarios/ci/**
+          if-no-files-found: warn
+
+      - name: Publish the result summary
+        if: always()
+        run: |
+          if [ -f results/output.xml ]; then
+            docker compose run --rm --no-deps toolbox \
+              python -c "
+          import xml.etree.ElementTree as ET
+          stat = ET.parse('results/output.xml').getroot().find('statistics/total/stat')
+          passed, failed = int(stat.get('pass')), int(stat.get('fail'))
+          skipped = int(stat.get('skip', 0))
+          print(f'## Regression suite: {passed} passed, {failed} failed, {skipped} skipped')
+          print()
+          print('A red run is expected on this release: the suite detects known open defects.')
+          print('See docs/rca/ for the analyses and the *Release verdict* in docs/TEST_STRATEGY.md.')
+          " >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Collect container logs on failure
+        if: failure()
+        run: docker compose logs --tail=200
+
+      - name: Stop the bench
+        if: always()
+        run: docker compose down --remove-orphans --volumes

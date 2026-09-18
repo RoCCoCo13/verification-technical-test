@@ -109,12 +109,20 @@ class PcapLibrary:
         return frames
 
     @keyword("Get Cancelled Grpc Calls")
-    def get_cancelled_grpc_calls(self, pcap: str, method: str | None = None) -> list[dict]:
+    def get_cancelled_grpc_calls(self, pcap: str, method: str | None = None,
+                                 cancelled_by: str | None = None) -> list[dict]:
         """Return the gRPC calls whose HTTP/2 stream was later reset.
 
         Correlates each ``RST_STREAM`` back to the call that opened the same
         stream id, so the result names the *method* that was cancelled rather
         than an anonymous stream number. Optionally filtered to one ``method``.
+
+        ``cancelled_by`` filters on the IP that sent the reset. When a client
+        abandons a call, the peer usually resets the same stream in response,
+        so both ends appear against one stream id. REQ-NET-001 is specifically
+        about streams the *gateway* cancels, and attributing the ECU's answer
+        to the gateway would overstate the finding -- pass the gateway address
+        to count only what the requirement is about.
         """
         calls = {c["stream_id"]: c for c in self.get_grpc_calls(pcap)}
         cancelled = []
@@ -123,6 +131,8 @@ class PcapLibrary:
             if call is None:
                 continue
             if method and call["method"] != method:
+                continue
+            if cancelled_by and rst["src"] != cancelled_by:
                 continue
             cancelled.append({**call, "rst_frame": rst["frame"], "rst_time": rst["time"],
                               "rst_src": rst["src"],
@@ -160,3 +170,17 @@ class PcapLibrary:
         return "\n".join(
             f"frame {c['frame']:>5}  t={c['time']:7.3f}s  src={c['src']:<12} "
             f"stream={c['stream_id']:<4} {c['method']}" for c in calls)
+
+    @keyword("Format Cancelled Grpc Calls")
+    def format_cancelled_grpc_calls(self, cancelled: list) -> str:
+        """Render cancelled calls with the frames and the time the gateway waited.
+
+        Formatting lives here rather than in an inline Robot expression so the
+        failure message can carry quotes and newlines without fighting Robot's
+        variable syntax, and so the same wording is reused by the RCA evidence.
+        """
+        return "\n".join(
+            f"  {c['method']} stream {c['stream_id']}: opened frame {c['frame']} at "
+            f"t={c['time']:.3f}s, RST_STREAM from {c['rst_src']} frame {c['rst_frame']} at "
+            f"t={c['rst_time']:.3f}s, {c['elapsed_ms']} ms after the request"
+            for c in cancelled)
