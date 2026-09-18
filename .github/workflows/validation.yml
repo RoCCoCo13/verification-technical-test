@@ -102,21 +102,25 @@ jobs:
             traces/pcap/scenarios/ci/**
           if-no-files-found: warn
 
+      # Uses the runner's own Python rather than a container, so the summary is
+      # still produced when the suite itself could not run.
       - name: Publish the result summary
         if: always()
         run: |
+          if [ ! -f results/output.xml ]; then
+            echo "## Regression suite did not produce a report" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 tools/ci_summary.py results/output.xml >> "$GITHUB_STEP_SUMMARY"
+
+      # Coverage gate: fails if any requirement in docs/REQUIREMENTS.md has no
+      # test at all. This is deliberately separate from the suite result - a
+      # requirement nobody tests is a different problem from a test that fails.
+      - name: Check requirement coverage
+        if: always()
+        run: |
           if [ -f results/output.xml ]; then
-            docker compose run --rm --no-deps toolbox \
-              python -c "
-          import xml.etree.ElementTree as ET
-          stat = ET.parse('results/output.xml').getroot().find('statistics/total/stat')
-          passed, failed = int(stat.get('pass')), int(stat.get('fail'))
-          skipped = int(stat.get('skip', 0))
-          print(f'## Regression suite: {passed} passed, {failed} failed, {skipped} skipped')
-          print()
-          print('A red run is expected on this release: the suite detects known open defects.')
-          print('See docs/rca/ for the analyses and the *Release verdict* in docs/TEST_STRATEGY.md.')
-          " >> "$GITHUB_STEP_SUMMARY"
+            python3 tools/traceability.py results/output.xml >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Collect container logs on failure

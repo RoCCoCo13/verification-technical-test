@@ -1,0 +1,26 @@
+# RCA-001 evidence - correlated DLT trace
+# Build TCU_GW2_SW_4.12.0 / CVB_API_1.8.3 / BCM4_SW_2.7.1, bench run 2026-09-18T08:09Z
+# Sources: traces/logs/{backend,tcu,body_ecu}.dlt
+# Same request ids appear in traces/pcap/scenarios/ci/S03_charging_session.pcap
+# Backend HTTP access-log lines (CLD1 API HTTP) omitted for readability.
+
+## DEFECTIVE: CHARGING_STOP req=557ffd01-8e40-42ba-a07a-54b070aa24e3
+## Chain stops at the gateway dispatch table. No GRPC line, no BCM4 line, no result callback.
+
+2026-09-18T08:09:48.950828Z 000050.760 CLD1 API  CMD  INFO  0x00A2 dispatching to vehicle req=557ffd01-8e40-42ba-a07a-54b070aa24e3 command=CHARGING_STOP tcu=http://ecu-gateway:8081
+2026-09-18T08:09:48.987082Z 000050.210 TCU1 TCU  CMD  INFO  0x00A4 remote command received req=557ffd01-8e40-42ba-a07a-54b070aa24e3 command=CHARGING_STOP params={}
+2026-09-18T08:09:48.996025Z 000050.219 TCU1 TCU  CMD  WARN  0x00A5 no handler for command, dropping req=557ffd01-8e40-42ba-a07a-54b070aa24e3 command=CHARGING_STOP known=CHARGE_STOP,CHARGING_START,CLIMATE_START,CLIMATE_STOP,LOCK,UNLOCK
+2026-09-18T08:09:48.998570Z 000050.808 CLD1 API  CMD  INFO  0x00A3 accepted by tcu req=557ffd01-8e40-42ba-a07a-54b070aa24e3 tcu_result=QUEUED queue_depth=1
+
+## CONTROL: CHARGING_START req=41f9f602-d3d4-4f63-95f2-ee4a914b27df, same session, 7 s earlier - full chain present
+
+2026-09-18T08:09:41.568622Z 000043.378 CLD1 API  CMD  INFO  0x0096 dispatching to vehicle req=41f9f602-d3d4-4f63-95f2-ee4a914b27df command=CHARGING_START tcu=http://ecu-gateway:8081
+2026-09-18T08:09:41.592023Z 000042.815 TCU1 TCU  CMD  INFO  0x0095 remote command received req=41f9f602-d3d4-4f63-95f2-ee4a914b27df command=CHARGING_START params={"target_soc_percent":60}
+2026-09-18T08:09:41.598138Z 000042.821 TCU1 TCU  GRPC INFO  0x0096 SetCharging -> req=41f9f602-d3d4-4f63-95f2-ee4a914b27df deadline_ms=1500 peer=body-ecu:50051
+2026-09-18T08:09:41.599378Z 000043.408 CLD1 API  CMD  INFO  0x0097 accepted by tcu req=41f9f602-d3d4-4f63-95f2-ee4a914b27df tcu_result=QUEUED queue_depth=1
+2026-09-18T08:09:41.604071Z 000042.865 BCM4 BODY CHG  INFO  0x003E SetCharging received req=41f9f602-d3d4-4f63-95f2-ee4a914b27df action=CHARGING_START target_soc=60
+2026-09-18T08:09:41.661207Z 000042.922 BCM4 BODY CHG  INFO  0x003F SetCharging done req=41f9f602-d3d4-4f63-95f2-ee4a914b27df state=CHARGING soc=42
+2026-09-18T08:09:41.667164Z 000042.890 TCU1 TCU  GRPC INFO  0x0098 SetCharging <- req=41f9f602-d3d4-4f63-95f2-ee4a914b27df result=OK detail=charging started elapsed_ms=69
+2026-09-18T08:09:41.672625Z 000042.896 TCU1 TCU  CMD  INFO  0x0099 command finished req=41f9f602-d3d4-4f63-95f2-ee4a914b27df command=CHARGING_START result=COMPLETED reason=OK elapsed_ms=74
+2026-09-18T08:09:41.680344Z 000043.489 CLD1 API  TLM  INFO  0x009A command result req=41f9f602-d3d4-4f63-95f2-ee4a914b27df status=COMPLETED reason=OK elapsed_ms=74
+2026-09-18T08:09:41.686067Z 000042.909 TCU1 TCU  CLD  DEBUG 0x009A result reported to backend req=41f9f602-d3d4-4f63-95f2-ee4a914b27df http=204

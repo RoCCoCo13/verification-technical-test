@@ -16,6 +16,7 @@ gRPC call on the backbone.
 """
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -138,6 +139,54 @@ class PcapLibrary:
                               "rst_src": rst["src"],
                               "elapsed_ms": round((rst["time"] - call["time"]) * 1000, 1)})
         return cancelled
+
+    @keyword("Get Grpc Frames Carrying Request Id")
+    def get_grpc_frames_carrying_request_id(self, pcap: str, request_id: str) -> list[dict]:
+        """Return the frames on the gRPC backbone whose payload carries ``request_id``.
+
+        Every gRPC request on this bench embeds the backend ``request_id`` in
+        its protobuf payload (docs/NETWORK_TRACES.md), and the gateway sends it
+        uncompressed, so the id is findable as raw bytes without dissecting the
+        protobuf schema.
+
+        This is the robust way to ask "did *this* command reach the Body ECU".
+        Unlike counting calls per method, it is unaffected by other traffic
+        sharing the capture -- the captures are taken in the gateway's network
+        namespace, so they see everything the gateway does, not only the
+        scenario being recorded.
+        """
+        if not re.fullmatch(r"[0-9a-fA-F-]{8,64}", request_id):
+            raise AssertionError(f"refusing to build a display filter from {request_id!r}")
+        rows = self._run(pcap, [*GRPC_DECODE,
+                                "-Y", f'frame contains "{request_id}" and tcp.dstport==50051',
+                                "-T", "fields", "-e", "frame.number",
+                                "-e", "frame.time_relative", "-e", "ip.src", "-e", "ip.dst"])
+        frames = []
+        for row in rows:
+            row += [""] * (4 - len(row))
+            frame, rel, src, dst = row[:4]
+            frames.append({"frame": int(frame) if frame else 0,
+                           "time": float(rel) if rel else 0.0,
+                           "src": src.split(",")[0], "dst": dst.split(",")[0]})
+        return frames
+
+    @keyword("Get Commands Missing From The Backbone")
+    def get_commands_missing_from_the_backbone(self, pcap: str, commands: list) -> list[str]:
+        """Return a description of every scenario command with no gRPC call carrying its id.
+
+        ``commands`` is the list returned by `Get Scenario Commands`. The result
+        is the set of remote commands the cloud accepted but the vehicle was
+        never actually asked to perform -- a silent drop, proven on the wire.
+        """
+        missing = []
+        for command in commands:
+            request_id = command["request_id"]
+            frames = self.get_grpc_frames_carrying_request_id(pcap, request_id)
+            logger.info(f"{command['path']} {request_id}: {len(frames)} backbone frame(s)")
+            if not frames:
+                missing.append(f"{command['path']} (request_id {request_id}, accepted at "
+                               f"{command.get('t')}) never reached the Body ECU")
+        return missing
 
     @keyword("Get Http Requests")
     def get_http_requests(self, pcap: str) -> list[dict]:

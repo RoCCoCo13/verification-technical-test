@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.1 (Python 3.12.14 on linux)" generated="2026-09-18T08:12:04.653499" rpa="false" schemaversion="5">
+<suite id="s1" name="05 Network" source="/work/robot/tests/05_network">
+<suite id="s1-s1" name="Backbone Traces" source="/work/robot/tests/05_network/backbone_traces.robot">
+<kw name="Select Scenario Capture Directory" owner="pcap" type="SETUP">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Directory Should Not Be Empty" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.009624" level="INFO" html="true">Listing contents of directory '&lt;a href="file:///traces/pcap/scenarios/ci"&gt;/traces/pcap/scenarios/ci&lt;/a&gt;'.</msg>
+<msg time="2026-09-18T08:12:06.018682" level="INFO" html="true">Directory '&lt;a href="file:///traces/pcap/scenarios/ci"&gt;/traces/pcap/scenarios/ci&lt;/a&gt;' contains 5 items.</msg>
+<arg>${SCENARIO_DIR}</arg>
+<doc>Fails if the specified directory is empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.009370" elapsed="0.009558"/>
+</kw>
+<msg time="2026-09-18T08:12:06.019318" level="INFO">${fresh} = True</msg>
+<var>${fresh}</var>
+<arg>Directory Should Not Be Empty</arg>
+<arg>${SCENARIO_DIR}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.009001" elapsed="0.010352"/>
+</kw>
+<if>
+<branch type="IF" condition="${fresh}">
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.021590" level="INFO">${CAPTURE_DIR} = /traces/pcap/scenarios/ci</msg>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${SCENARIO_DIR}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.020038" elapsed="0.001615"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.023191" level="INFO">${SCENARIO_LABEL} = ci</msg>
+<arg>${SCENARIO_LABEL}</arg>
+<arg>${SCENARIO_DIR.rstrip('/').split('/')[-1]}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.021858" elapsed="0.001388"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.023614" level="INFO">Analysing captures taken during this run: /traces/pcap/scenarios/ci</msg>
+<arg>Analysing captures taken during this run: ${SCENARIO_DIR}</arg>
+<arg>level=INFO</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.023415" elapsed="0.000248"/>
+</kw>
+<status status="PASS" start="2026-09-18T08:12:06.019574" elapsed="0.004130"/>
+</branch>
+<branch type="ELSE">
+<kw name="Directory Should Exist" owner="OperatingSystem">
+<arg>${FALLBACK_SCENARIO_DIR}</arg>
+<arg>msg=no scenario capture at ${SCENARIO_DIR} and no fallback at ${FALLBACK_SCENARIO_DIR}; run 'docker compose run --rm -e SCENARIO_LABEL=ci scenario-runner' first</arg>
+<doc>Fails unless the given path points to an existing directory.</doc>
+<status status="NOT RUN" start="2026-09-18T08:12:06.023893" elapsed="0.000019"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${CAPTURE_DIR}</arg>
+<arg>${FALLBACK_SCENARIO_DIR}</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-09-18T08:12:06.024052" elapsed="0.000018"/>
+</kw>
+<kw name="Set Suite Variable" owner="BuiltIn">
+<arg>${SCENARIO_LABEL}</arg>
+<arg>samples</arg>
+<doc>Makes a variable available everywhere within the scope of the current suite.</doc>
+<status status="NOT RUN" start="2026-09-18T08:12:06.024216" elapsed="0.000031"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>No fresh capture at ${SCENARIO_DIR}; falling back to the supplied captures of this build at ${FALLBACK_SCENARIO_DIR}</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-09-18T08:12:06.024386" elapsed="0.000018"/>
+</kw>
+<status status="NOT RUN" start="2026-09-18T08:12:06.023754" elapsed="0.000689"/>
+</branch>
+<status status="PASS" start="2026-09-18T08:12:06.019516" elapsed="0.004954"/>
+</if>
+<doc>Choose the capture directory for this run and publish it as the suite
+variables ``${CAPTURE_DIR}`` and ``${SCENARIO_LABEL}``.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.007850" elapsed="0.016810"/>
+</kw>
+<test id="s1-s1-t1" name="Every Charging Command Reaches The Body Ecu On The Backbone" line="40">
+<kw name="Commands Missing From The Backbone">
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.027911" level="INFO">${path} = /traces/pcap/scenarios/ci/S03_charging_session.pcap</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.027643" elapsed="0.000310"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.041083" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/S03_charging_session.pcap"&gt;/traces/pcap/scenarios/ci/S03_charging_session.pcap&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.028230" elapsed="0.013008"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:06.041355" elapsed="0.000076"/>
+</return>
+<msg time="2026-09-18T08:12:06.041646" level="INFO">${pcap} = /traces/pcap/scenarios/ci/S03_charging_session.pcap</msg>
+<var>${pcap}</var>
+<arg>${capture}</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.027245" elapsed="0.014427"/>
+</kw>
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.042549" level="INFO">${path} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.042326" elapsed="0.000249"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.051874" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/run_summary.json"&gt;/traces/pcap/scenarios/ci/run_summary.json&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.042783" elapsed="0.009367"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:06.052308" elapsed="0.000141"/>
+</return>
+<msg time="2026-09-18T08:12:06.052751" level="INFO">${summary} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${summary}</var>
+<arg>run_summary.json</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.041951" elapsed="0.010826"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.054106" level="INFO">${scenario} = S03_charging_session</msg>
+<var>${scenario}</var>
+<arg>${capture.replace('.pcap', '')}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.053097" elapsed="0.001047"/>
+</kw>
+<kw name="Get Scenario Commands" owner="ScenarioLibrary">
+<msg time="2026-09-18T08:12:06.067402" level="INFO">2 accepted commands in S03_charging_session matching /charging/</msg>
+<msg time="2026-09-18T08:12:06.067758" level="INFO">${commands} = [{'t': '2026-09-18T08:09:41.613Z', 'kind': 'REST', 'method': 'POST', 'path': '/charging/start', 'http': 200, 'request_id': '41f9f602-d3d4-4f63-95f2-ee4a914b27df', 'status': 'ACCEPTED'}, {'t': '2026-09...</msg>
+<var>${commands}</var>
+<arg>${summary}</arg>
+<arg>${scenario}</arg>
+<arg>path_contains=${path_contains}</arg>
+<doc>Return the accepted remote commands of one scenario.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.054348" elapsed="0.013444"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.070125" level="INFO">Length is 2.</msg>
+<arg>${commands}</arg>
+<arg>msg=the timeline of ${scenario} lists no accepted command matching '${path_contains}'; the capture cannot validate anything</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.069564" elapsed="0.000643"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.071642" level="INFO">Correlating 2 accepted '/charging/' commands of S03_charging_session against ci/S03_charging_session.pcap</msg>
+<arg>Correlating ${{ len($commands) }} accepted '${path_contains}' commands of ${scenario} against ${SCENARIO_LABEL}/${capture}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.070420" elapsed="0.001296"/>
+</kw>
+<kw name="Get Commands Missing From The Backbone" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:06.364334" level="INFO">/charging/start 41f9f602-d3d4-4f63-95f2-ee4a914b27df: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:06.665006" level="INFO">/charging/stop 557ffd01-8e40-42ba-a07a-54b070aa24e3: 0 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:06.665206" level="INFO">${missing} = ['/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU']</msg>
+<var>${missing}</var>
+<arg>${pcap}</arg>
+<arg>${commands}</arg>
+<doc>Return a description of every scenario command with no gRPC call carrying its id.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.071963" elapsed="0.593271"/>
+</kw>
+<return>
+<value>${missing}</value>
+<status status="PASS" start="2026-09-18T08:12:06.665332" elapsed="0.000060"/>
+</return>
+<msg time="2026-09-18T08:12:06.665561" level="INFO">${missing} = ['/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU']</msg>
+<var>${missing}</var>
+<arg>${S03}</arg>
+<arg>/charging/</arg>
+<doc>Return the accepted commands of a scenario that produced no gRPC call
+carrying their request_id.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.026547" elapsed="0.639037"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.666898" level="INFO">Length is 1.</msg>
+<msg time="2026-09-18T08:12:06.667130" level="FAIL">charging commands accepted by the cloud that never reached the Body ECU:
+/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU</msg>
+<arg>${missing}</arg>
+<arg>msg=charging commands accepted by the cloud that never reached the Body ECU:\n${{ chr(10).join($missing) }}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="FAIL" start="2026-09-18T08:12:06.665873" elapsed="0.001534">charging commands accepted by the cloud that never reached the Body ECU:
+/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU</status>
+</kw>
+<doc>REQ-ECU-002 / REQ-CHG-002 on the wire: every charging command the cloud
+accepted shall appear on the backbone as a gRPC call carrying its request_id.
+
+This is the cleanest possible proof that a command was dropped inside the gateway:
+the cloud leg and the backbone leg are in one file, at one vantage point, at the
+same instant, and each command is identified individually rather than counted.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>req:REQ-CHG-002</tag>
+<tag>req:REQ-ECU-002</tag>
+<status status="FAIL" start="2026-09-18T08:12:06.024868" elapsed="0.643102">charging commands accepted by the cloud that never reached the Body ECU:
+/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU</status>
+</test>
+<test id="s1-s1-t2" name="Every Climate Command Reaches The Body Ecu On The Backbone" line="52">
+<kw name="Commands Missing From The Backbone">
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.670419" level="INFO">${path} = /traces/pcap/scenarios/ci/S02_climate_preconditioning.pcap</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.670190" elapsed="0.000266"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.685491" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/S02_climate_preconditioning.pcap"&gt;/traces/pcap/scenarios/ci/S02_climate_preconditioning.pcap&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.670621" elapsed="0.015093"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:06.685830" elapsed="0.000055"/>
+</return>
+<msg time="2026-09-18T08:12:06.686082" level="INFO">${pcap} = /traces/pcap/scenarios/ci/S02_climate_preconditioning.pcap</msg>
+<var>${pcap}</var>
+<arg>${capture}</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.669761" elapsed="0.016366"/>
+</kw>
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.687187" level="INFO">${path} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.686943" elapsed="0.000277"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:06.697231" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/run_summary.json"&gt;/traces/pcap/scenarios/ci/run_summary.json&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.687367" elapsed="0.010013"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:06.697482" elapsed="0.000059"/>
+</return>
+<msg time="2026-09-18T08:12:06.697727" level="INFO">${summary} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${summary}</var>
+<arg>run_summary.json</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.686511" elapsed="0.011240"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.698713" level="INFO">${scenario} = S02_climate_preconditioning</msg>
+<var>${scenario}</var>
+<arg>${capture.replace('.pcap', '')}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.697985" elapsed="0.000754"/>
+</kw>
+<kw name="Get Scenario Commands" owner="ScenarioLibrary">
+<msg time="2026-09-18T08:12:06.711548" level="INFO">2 accepted commands in S02_climate_preconditioning matching /climate/</msg>
+<msg time="2026-09-18T08:12:06.711837" level="INFO">${commands} = [{'t': '2026-09-18T08:09:22.482Z', 'kind': 'REST', 'method': 'POST', 'path': '/climate/start', 'http': 200, 'request_id': '6f3e5a6c-ffbe-4426-8909-9494bb7bdba7', 'status': 'ACCEPTED'}, {'t': '2026-09-...</msg>
+<var>${commands}</var>
+<arg>${summary}</arg>
+<arg>${scenario}</arg>
+<arg>path_contains=${path_contains}</arg>
+<doc>Return the accepted remote commands of one scenario.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.698927" elapsed="0.012950"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.712966" level="INFO">Length is 2.</msg>
+<arg>${commands}</arg>
+<arg>msg=the timeline of ${scenario} lists no accepted command matching '${path_contains}'; the capture cannot validate anything</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.712150" elapsed="0.000889"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:06.714121" level="INFO">Correlating 2 accepted '/climate/' commands of S02_climate_preconditioning against ci/S02_climate_preconditioning.pcap</msg>
+<arg>Correlating ${{ len($commands) }} accepted '${path_contains}' commands of ${scenario} against ${SCENARIO_LABEL}/${capture}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.713252" elapsed="0.000921"/>
+</kw>
+<kw name="Get Commands Missing From The Backbone" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:06.965783" level="INFO">/climate/start 6f3e5a6c-ffbe-4426-8909-9494bb7bdba7: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:07.209875" level="INFO">/climate/stop be9a3d8f-1888-4fab-bc03-255f0c7acdbe: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:07.210061" level="INFO">${missing} = []</msg>
+<var>${missing}</var>
+<arg>${pcap}</arg>
+<arg>${commands}</arg>
+<doc>Return a description of every scenario command with no gRPC call carrying its id.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.714403" elapsed="0.495684"/>
+</kw>
+<return>
+<value>${missing}</value>
+<status status="PASS" start="2026-09-18T08:12:07.210225" elapsed="0.000056"/>
+</return>
+<msg time="2026-09-18T08:12:07.210453" level="INFO">${missing} = []</msg>
+<var>${missing}</var>
+<arg>${S02}</arg>
+<arg>/climate/</arg>
+<doc>Return the accepted commands of a scenario that produced no gRPC call
+carrying their request_id.</doc>
+<status status="PASS" start="2026-09-18T08:12:06.669248" elapsed="0.541228"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:07.211544" level="INFO">Length is 0.</msg>
+<arg>${missing}</arg>
+<arg>msg=climate commands accepted by the cloud that never reached the Body ECU:\n${{ chr(10).join($missing) }}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.210685" elapsed="0.000914"/>
+</kw>
+<doc>REQ-ECU-002 for the climate domain, by the same per-command correlation.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>req:REQ-CLI-001</tag>
+<tag>req:REQ-ECU-002</tag>
+<status status="PASS" start="2026-09-18T08:12:06.668390" elapsed="0.543348"/>
+</test>
+<test id="s1-s1-t3" name="Every Locking Command Reaches The Body Ecu On The Backbone" line="59">
+<kw name="Commands Missing From The Backbone">
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:07.214100" level="INFO">${path} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.213822" elapsed="0.000313"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:07.251661" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap"&gt;/traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.214308" elapsed="0.037505"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:07.251910" elapsed="0.000055"/>
+</return>
+<msg time="2026-09-18T08:12:07.252162" level="INFO">${pcap} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${pcap}</var>
+<arg>${capture}</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.213302" elapsed="0.038884"/>
+</kw>
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:07.253009" level="INFO">${path} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.252805" elapsed="0.000230"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:07.264096" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/run_summary.json"&gt;/traces/pcap/scenarios/ci/run_summary.json&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.253178" elapsed="0.011063"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:07.264330" elapsed="0.000052"/>
+</return>
+<msg time="2026-09-18T08:12:07.264574" level="INFO">${summary} = /traces/pcap/scenarios/ci/run_summary.json</msg>
+<var>${summary}</var>
+<arg>run_summary.json</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.252431" elapsed="0.012169"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-09-18T08:12:07.265601" level="INFO">${scenario} = S01_lock_unlock_cycles</msg>
+<var>${scenario}</var>
+<arg>${capture.replace('.pcap', '')}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.264816" elapsed="0.000830"/>
+</kw>
+<kw name="Get Scenario Commands" owner="ScenarioLibrary">
+<msg time="2026-09-18T08:12:07.280587" level="INFO">10 accepted commands in S01_lock_unlock_cycles matching /vehicle/</msg>
+<msg time="2026-09-18T08:12:07.280806" level="INFO">${commands} = [{'t': '2026-09-18T08:09:01.359Z', 'kind': 'REST', 'method': 'POST', 'path': '/vehicle/unlock', 'http': 200, 'request_id': '13e161f6-2b2f-474e-ad43-0445cc484bea', 'status': 'ACCEPTED'}, {'t': '2026-09...</msg>
+<var>${commands}</var>
+<arg>${summary}</arg>
+<arg>${scenario}</arg>
+<arg>path_contains=${path_contains}</arg>
+<doc>Return the accepted remote commands of one scenario.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.265882" elapsed="0.014953"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:07.281370" level="INFO">Length is 10.</msg>
+<arg>${commands}</arg>
+<arg>msg=the timeline of ${scenario} lists no accepted command matching '${path_contains}'; the capture cannot validate anything</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.281067" elapsed="0.000353"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:07.282528" level="INFO">Correlating 10 accepted '/vehicle/' commands of S01_lock_unlock_cycles against ci/S01_lock_unlock_cycles.pcap</msg>
+<arg>Correlating ${{ len($commands) }} accepted '${path_contains}' commands of ${scenario} against ${SCENARIO_LABEL}/${capture}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.281579" elapsed="0.001006"/>
+</kw>
+<kw name="Get Commands Missing From The Backbone" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:07.557926" level="INFO">/vehicle/unlock 13e161f6-2b2f-474e-ad43-0445cc484bea: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:07.710457" level="INFO">/vehicle/lock acf3ab8d-43d4-4003-af26-353582b6683f: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:07.871898" level="INFO">/vehicle/unlock c2344b66-e6ab-48e9-8e14-3ebaecf9b557: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.040553" level="INFO">/vehicle/lock dc9505a5-3b04-4bc7-b609-c9dae9a6de7e: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.215595" level="INFO">/vehicle/unlock fe9eacd6-615a-42bd-9536-56cd8607b298: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.359638" level="INFO">/vehicle/lock 250bdf11-51ce-4144-a286-8f1cafdf1bf3: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.526669" level="INFO">/vehicle/unlock ebe6651c-0e25-4f6c-98eb-f0f458f0c1d4: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.679969" level="INFO">/vehicle/lock af523428-fd19-4bdf-9e01-91d63fc2f3c9: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.831417" level="INFO">/vehicle/unlock b13a071e-15a3-4dba-b34a-0fdee7489dc5: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.993204" level="INFO">/vehicle/lock 52c36f81-d40f-4263-adf3-5d367de134b8: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:08.993392" level="INFO">${missing} = []</msg>
+<var>${missing}</var>
+<arg>${pcap}</arg>
+<arg>${commands}</arg>
+<doc>Return a description of every scenario command with no gRPC call carrying its id.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.282772" elapsed="1.710647"/>
+</kw>
+<return>
+<value>${missing}</value>
+<status status="PASS" start="2026-09-18T08:12:08.993512" elapsed="0.000044"/>
+</return>
+<msg time="2026-09-18T08:12:08.993728" level="INFO">${missing} = []</msg>
+<var>${missing}</var>
+<arg>${S01}</arg>
+<arg>/vehicle/</arg>
+<doc>Return the accepted commands of a scenario that produced no gRPC call
+carrying their request_id.</doc>
+<status status="PASS" start="2026-09-18T08:12:07.212849" elapsed="1.780899"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:08.994796" level="INFO">Length is 0.</msg>
+<arg>${missing}</arg>
+<arg>msg=locking commands accepted by the cloud that never reached the Body ECU:\n${{ chr(10).join($missing) }}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:08.993952" elapsed="0.000891"/>
+</kw>
+<doc>REQ-ECU-002 for central locking, by the same per-command correlation.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>req:REQ-ECU-002</tag>
+<tag>req:REQ-LCK-001</tag>
+<status status="PASS" start="2026-09-18T08:12:07.212046" elapsed="1.782906"/>
+</test>
+<test id="s1-s1-t4" name="No Door Lock Stream Is Cancelled By The Gateway" line="66">
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:08.996442" level="INFO">${path} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:08.996298" elapsed="0.000163"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:08.999348" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap"&gt;/traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:08.996568" elapsed="0.002856"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:08.999481" elapsed="0.000034"/>
+</return>
+<msg time="2026-09-18T08:12:08.999661" level="INFO">${pcap} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${pcap}</var>
+<arg>${S01}</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:08.996037" elapsed="0.003644"/>
+</kw>
+<kw name="Get Cancelled Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.147935" level="INFO">34 gRPC calls in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:09.299296" level="INFO">3 RST_STREAM frames in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:09.299487" level="INFO">${cancelled} = [{'frame': 26, 'time': 0.539141, 'src': '172.28.0.10', 'stream_id': '11', 'path': '/vehicle.body.v1.BodyControl/SetDoorLock', 'method': 'SetDoorLock', 'rst_frame': 77, 'rst_time': 1.148757, 'rst_src':...</msg>
+<var>${cancelled}</var>
+<arg>${pcap}</arg>
+<arg>SetDoorLock</arg>
+<arg>cancelled_by=${GATEWAY_IP}</arg>
+<doc>Return the gRPC calls whose HTTP/2 stream was later reset.</doc>
+<status status="PASS" start="2026-09-18T08:12:08.999815" elapsed="0.299695"/>
+</kw>
+<kw name="Get Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.467492" level="INFO">34 gRPC calls in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:09.467712" level="INFO">${all_calls} = [{'frame': 1, 'time': 0.0, 'src': '172.28.0.10', 'stream_id': '9', 'path': '/vehicle.body.v1.BodyControl/Heartbeat', 'method': 'Heartbeat'}, {'frame': 26, 'time': 0.539141, 'src': '172.28.0.10', 'stre...</msg>
+<var>${all_calls}</var>
+<arg>${pcap}</arg>
+<doc>Return every gRPC call in ``pcap`` as dicts.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.299720" elapsed="0.168015"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.468256" level="INFO">${lock_calls} = [{'frame': 26, 'time': 0.539141, 'src': '172.28.0.10', 'stream_id': '11', 'path': '/vehicle.body.v1.BodyControl/SetDoorLock', 'method': 'SetDoorLock'}, {'frame': 152, 'time': 1.913639, 'src': '172.28....</msg>
+<var>${lock_calls}</var>
+<arg>[c for c in $all_calls if c['method'] == 'SetDoorLock']</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.467930" elapsed="0.000348"/>
+</kw>
+<kw name="Format Cancelled Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.468585" level="INFO">${rendered} =   SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request
+  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM f...</msg>
+<var>${rendered}</var>
+<arg>${cancelled}</arg>
+<doc>Render cancelled calls with the frames and the time the gateway waited.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.468410" elapsed="0.000194"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.469719" level="INFO">10 SetDoorLock calls in ci/S01_lock_unlock_cycles.pcap, 2 cancelled by the gateway</msg>
+<arg>${{ len($lock_calls) }} SetDoorLock calls in ${SCENARIO_LABEL}/${S01}, ${{ len($cancelled) }} cancelled by the gateway</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.468728" elapsed="0.001026"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.469968" level="INFO">Cancelled streams:
+  SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request
+  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM from 172.28.0.10 frame 1201 at t=11.644s, 602.9 ms after the request</msg>
+<arg>Cancelled streams:\n${rendered}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.469864" elapsed="0.000135"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.471052" level="INFO">Length is 2.</msg>
+<msg time="2026-09-18T08:12:09.471124" level="FAIL">the gateway cancelled 2 of 10 SetDoorLock streams with RST_STREAM:
+  SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request
+  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM from 172.28.0.10 frame 1201 at t=11.644s, 602.9 ms after the request</msg>
+<arg>${cancelled}</arg>
+<arg>msg=the gateway cancelled ${{ len($cancelled) }} of ${{ len($lock_calls) }} SetDoorLock streams with RST_STREAM:\n${rendered}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="FAIL" start="2026-09-18T08:12:09.470101" elapsed="0.001090">the gateway cancelled 2 of 10 SetDoorLock streams with RST_STREAM:
+  SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request
+  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM from 172.28.0.10 frame 1201 at t=11.644s, 602.9 ms after the request</status>
+</kw>
+<doc>REQ-NET-001: gRPC deadlines used by the gateway shall accommodate the
+Body ECU actuation times; in a nominal capture no SetDoorLock stream shall be
+cancelled (RST_STREAM) by the gateway.
+
+Each RST_STREAM is correlated back to the call that opened the stream, so the
+failure names the method and how long the gateway waited before giving up. That
+elapsed time, next to the calibrated deadline, is the whole argument.
+
+Only resets sent by the gateway are counted: when a client abandons a call the
+peer resets the same stream in response, and attributing the ECU's answer to the
+gateway would overstate the finding.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>req:REQ-LCK-003</tag>
+<tag>req:REQ-NET-001</tag>
+<status status="FAIL" start="2026-09-18T08:12:08.995145" elapsed="0.476635">the gateway cancelled 2 of 10 SetDoorLock streams with RST_STREAM:
+  SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request
+  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM from 172.28.0.10 frame 1201 at t=11.644s, 602.9 ms after the request</status>
+</test>
+<test id="s1-s1-t5" name="The Reference Bench Shows No Cancelled Door Lock Streams" line="89">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:09.472704" level="INFO">${pcap} = /traces/reference/S01_lock_unlock_cycles.pcap</msg>
+<var>${pcap}</var>
+<arg>${REFERENCE_DIR}</arg>
+<arg>${S01}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.472531" elapsed="0.000194"/>
+</kw>
+<kw name="Get Cancelled Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.646908" level="INFO">34 gRPC calls in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:09.805011" level="INFO">0 RST_STREAM frames in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:09.805209" level="INFO">${cancelled} = []</msg>
+<var>${cancelled}</var>
+<arg>${pcap}</arg>
+<arg>SetDoorLock</arg>
+<arg>cancelled_by=${GATEWAY_IP}</arg>
+<doc>Return the gRPC calls whose HTTP/2 stream was later reset.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.472841" elapsed="0.332395"/>
+</kw>
+<kw name="Format Cancelled Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.805676" level="INFO">${rendered} = </msg>
+<var>${rendered}</var>
+<arg>${cancelled}</arg>
+<doc>Render cancelled calls with the frames and the time the gateway waited.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.805478" elapsed="0.000217"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.806053" level="INFO">Length is 0.</msg>
+<arg>${cancelled}</arg>
+<arg>msg=the golden reference capture itself contains cancelled SetDoorLock streams; the comparison baseline is not clean and the REQ-NET-001 finding must be re-assessed:\n${rendered}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.805830" elapsed="0.000266"/>
+</kw>
+<doc>Control for the test above, against the golden capture in
+``traces/reference/`` recorded on a bench the validation team accepted.
+
+Without this, an RST_STREAM finding could be dismissed as normal gRPC behaviour or
+as an artefact of how the capture is taken. The reference is recorded at the same
+vantage point with the same scenario, so a difference between the two is a
+difference in the software, not in the method.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>reference</tag>
+<tag>req:REQ-NET-001</tag>
+<status status="PASS" start="2026-09-18T08:12:09.471987" elapsed="0.334207"/>
+</test>
+<test id="s1-s1-t6" name="The Reference Bench Forwards Every Charging Command" line="104">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:09.807185" level="INFO">${summary} = /traces/reference/run_summary.json</msg>
+<var>${summary}</var>
+<arg>${REFERENCE_DIR}</arg>
+<arg>run_summary.json</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.807052" elapsed="0.000150"/>
+</kw>
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:09.807444" level="INFO">${pcap} = /traces/reference/S03_charging_session.pcap</msg>
+<var>${pcap}</var>
+<arg>${REFERENCE_DIR}</arg>
+<arg>${S03}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.807314" elapsed="0.000146"/>
+</kw>
+<kw name="Get Scenario Commands" owner="ScenarioLibrary">
+<msg time="2026-09-18T08:12:09.823898" level="INFO">2 accepted commands in S03_charging_session matching /charging/</msg>
+<msg time="2026-09-18T08:12:09.824183" level="INFO">${commands} = [{'t': '2026-09-15T17:47:50.577Z', 'kind': 'REST', 'method': 'POST', 'path': '/charging/start', 'http': 200, 'request_id': 'ca03ef3c-c961-4f2c-8dfc-e9915598a60d', 'status': 'ACCEPTED'}, {'t': '2026-09...</msg>
+<var>${commands}</var>
+<arg>${summary}</arg>
+<arg>S03_charging_session</arg>
+<arg>path_contains=/charging/</arg>
+<doc>Return the accepted remote commands of one scenario.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.807569" elapsed="0.016647"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:09.824733" level="INFO">Length is 2.</msg>
+<arg>${commands}</arg>
+<arg>msg=the reference timeline lists no charging commands</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.824533" elapsed="0.000246"/>
+</kw>
+<kw name="Get Commands Missing From The Backbone" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:09.975727" level="INFO">/charging/start ca03ef3c-c961-4f2c-8dfc-e9915598a60d: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:10.116918" level="INFO">/charging/stop 66507b8b-1d8e-41c6-810f-25e84a7ac4cb: 1 backbone frame(s)</msg>
+<msg time="2026-09-18T08:12:10.117075" level="INFO">${missing} = []</msg>
+<var>${missing}</var>
+<arg>${pcap}</arg>
+<arg>${commands}</arg>
+<doc>Return a description of every scenario command with no gRPC call carrying its id.</doc>
+<status status="PASS" start="2026-09-18T08:12:09.824908" elapsed="0.292188"/>
+</kw>
+<kw name="Should Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:10.118128" level="INFO">Length is 0.</msg>
+<arg>${missing}</arg>
+<arg>msg=the golden reference itself does not forward every charging command; the baseline is not clean:\n${{ chr(10).join($missing) }}</arg>
+<doc>Verifies that the given item is empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.117393" elapsed="0.000775"/>
+</kw>
+<doc>Control for the charging test: on the golden capture both charging
+commands appear on the backbone. This establishes that "every command reaches the
+ECU" is the correct expectation for this scenario rather than an assumption of mine.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>reference</tag>
+<tag>req:REQ-ECU-002</tag>
+<status status="PASS" start="2026-09-18T08:12:09.806349" elapsed="0.311915"/>
+</test>
+<test id="s1-s1-t7" name="The Gateway Supervises The Body Ecu On The Backbone" line="117">
+<kw name="Scenario Capture" owner="pcap">
+<kw name="Join Path" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:10.119616" level="INFO">${path} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${path}</var>
+<arg>${CAPTURE_DIR}</arg>
+<arg>${filename}</arg>
+<doc>Joins the given path part(s) to the given base path.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.119291" elapsed="0.000345"/>
+</kw>
+<kw name="File Should Exist" owner="OperatingSystem">
+<msg time="2026-09-18T08:12:10.122215" level="INFO" html="true">File '&lt;a href="file:///traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap"&gt;/traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap&lt;/a&gt;' exists.</msg>
+<arg>${path}</arg>
+<arg>msg=scenario capture ${filename} is missing from ${CAPTURE_DIR}</arg>
+<doc>Fails unless the given ``path`` points to an existing file.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.119741" elapsed="0.002553"/>
+</kw>
+<return>
+<value>${path}</value>
+<status status="PASS" start="2026-09-18T08:12:10.122349" elapsed="0.000038"/>
+</return>
+<msg time="2026-09-18T08:12:10.122509" level="INFO">${pcap} = /traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap</msg>
+<var>${pcap}</var>
+<arg>${S01}</arg>
+<doc>Return the full path of one scenario capture in the selected directory.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.119017" elapsed="0.003725"/>
+</kw>
+<kw name="Get Grpc Calls" owner="PcapLibrary">
+<msg time="2026-09-18T08:12:10.352987" level="INFO">34 gRPC calls in S01_lock_unlock_cycles.pcap</msg>
+<msg time="2026-09-18T08:12:10.353610" level="INFO">${calls} = [{'frame': 1, 'time': 0.0, 'src': '172.28.0.10', 'stream_id': '9', 'path': '/vehicle.body.v1.BodyControl/Heartbeat', 'method': 'Heartbeat'}, {'frame': 26, 'time': 0.539141, 'src': '172.28.0.10', 'stre...</msg>
+<var>${calls}</var>
+<arg>${pcap}</arg>
+<doc>Return every gRPC call in ``pcap`` as dicts.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.122889" elapsed="0.230763"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-09-18T08:12:10.355292" level="INFO">${heartbeats} = [{'frame': 1, 'time': 0.0, 'src': '172.28.0.10', 'stream_id': '9', 'path': '/vehicle.body.v1.BodyControl/Heartbeat', 'method': 'Heartbeat'}, {'frame': 178, 'time': 2.036988, 'src': '172.28.0.10', 'str...</msg>
+<var>${heartbeats}</var>
+<arg>[c for c in $calls if c['method'] == 'Heartbeat']</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.353922" elapsed="0.001409"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-09-18T08:12:10.357867" level="INFO">10 Heartbeat calls in ci/S01_lock_unlock_cycles.pcap</msg>
+<arg>${{ len($heartbeats) }} Heartbeat calls in ${SCENARIO_LABEL}/${S01}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.355535" elapsed="0.002385"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-09-18T08:12:10.358264" level="INFO">Length is 10.</msg>
+<arg>${heartbeats}</arg>
+<arg>msg=no Heartbeat calls on the backbone; the gateway is not supervising the Body ECU</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.358097" elapsed="0.000208"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-09-18T08:12:10.358750" level="INFO">${from_gateway} = [{'frame': 1, 'time': 0.0, 'src': '172.28.0.10', 'stream_id': '9', 'path': '/vehicle.body.v1.BodyControl/Heartbeat', 'method': 'Heartbeat'}, {'frame': 178, 'time': 2.036988, 'src': '172.28.0.10', 'str...</msg>
+<var>${from_gateway}</var>
+<arg>[c for c in $heartbeats if c['src'] == '${GATEWAY_IP}']</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.358440" elapsed="0.000330"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<arg>${{ len($from_gateway) }}</arg>
+<arg>${{ len($heartbeats) }}</arg>
+<arg>msg=some Heartbeat calls did not originate from the gateway (${GATEWAY_IP}); check the capture vantage point</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-09-18T08:12:10.358880" elapsed="0.001041"/>
+</kw>
+<doc>REQ-ECU-001 observed on the wire rather than in the log: the heartbeat
+is visible as periodic Heartbeat calls from the gateway to the Body ECU.</doc>
+<tag>network</tag>
+<tag>pcap</tag>
+<tag>req:REQ-ECU-001</tag>
+<status status="PASS" start="2026-09-18T08:12:10.118445" elapsed="0.241572"/>
+</test>
+<doc>In-vehicle backbone analysis from scenario PCAPs.
+
+The network is the one interface that cannot be talked out of. A REST
+command with no matching gRPC call on the backbone proves the vehicle was
+never asked; an RST_STREAM proves who gave up on whom and after how long.
+
+Captures come from the scenario runner (``SCENARIO_LABEL=ci``), which runs
+inside the gateway network namespace so all three legs land in one file.
+That vantage point has a consequence this suite is built around: the
+capture sees **everything** the gateway does, not only the scenario being
+recorded. Counting calls per method would therefore be sound only while the
+capture has the bench to itself. Instead, each command is correlated by its
+``request_id``, which the gateway embeds in the gRPC payload -- a result
+that holds whatever else is talking to the bench at the time.
+
+Every finding is paired with the same measurement on the golden capture in
+``traces/reference/``: a clean reference and a dirty build is a difference
+in the software, not in the method.</doc>
+<status status="FAIL" start="2026-09-18T08:12:04.778068" elapsed="5.582315"/>
+</suite>
+<status status="FAIL" start="2026-09-18T08:12:04.746711" elapsed="5.614251"/>
+</suite>
+<statistics>
+<total>
+<stat pass="5" fail="2" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="5" fail="2" skip="0">network</stat>
+<stat pass="5" fail="2" skip="0">pcap</stat>
+<stat pass="2" fail="0" skip="0">reference</stat>
+<stat pass="0" fail="1" skip="0">req:REQ-CHG-002</stat>
+<stat pass="1" fail="0" skip="0">req:REQ-CLI-001</stat>
+<stat pass="1" fail="0" skip="0">req:REQ-ECU-001</stat>
+<stat pass="3" fail="1" skip="0">req:REQ-ECU-002</stat>
+<stat pass="1" fail="0" skip="0">req:REQ-LCK-001</stat>
+<stat pass="0" fail="1" skip="0">req:REQ-LCK-003</stat>
+<stat pass="1" fail="1" skip="0">req:REQ-NET-001</stat>
+</tag>
+<suite>
+<stat pass="5" fail="2" skip="0" id="s1" name="05 Network">05 Network</stat>
+<stat pass="5" fail="2" skip="0" id="s1-s1" name="Backbone Traces">05 Network.Backbone Traces</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

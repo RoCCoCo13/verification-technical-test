@@ -1,0 +1,6 @@
+2026-09-18T08:01:25.695073Z 000030.752 TCU1 TCU  HVAC DEBUG 0x0083 temperature encoded temp_c=22.5 raw=44 quantize=floor_integer
+2026-09-18T08:01:25.878328Z 000030.935 TCU1 TCU  HVAC DEBUG 0x008B temperature encoded temp_c=22.0 raw=44 quantize=floor_integer
+2026-09-18T08:01:33.740068Z 000038.797 TCU1 TCU  HVAC DEBUG 0x00BF temperature encoded temp_c=22.0 raw=44 quantize=floor_integer
+2026-09-18T08:01:39.925291Z 000044.982 TCU1 TCU  HVAC DEBUG 0x00EA temperature encoded temp_c=15.5 raw=30 quantize=floor_integer
+2026-09-18T08:01:40.210354Z 000045.267 TCU1 TCU  HVAC DEBUG 0x00F2 temperature encoded temp_c=-5.0 raw=-10 quantize=floor_integer
+2026-09-18T08:01:40.472910Z 000045.529 TCU1 TCU  HVAC DEBUG 0x00FB temperature encoded temp_c=28.5 raw=56 quantize=floor_integer

@@ -9,6 +9,7 @@ Documentation     Locating and analysing scenario captures.
 ...               run or from a supplied capture.
 
 Library           PcapLibrary
+Library           ScenarioLibrary
 Library           OperatingSystem
 Library           Collections
 
