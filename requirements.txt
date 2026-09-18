@@ -1,0 +1,10 @@
+# Test-automation dependencies, pinned to the versions the bench toolbox image
+# ships (env/toolbox/requirements.txt), so a host run and a container run
+# execute identical code.
+robotframework==7.1
+robotframework-requests==0.9.7
+requests==2.32.3
+grpcio==1.66.1
+grpcio-tools==1.66.1
+protobuf==5.28.2
+jsonschema==4.23.0
