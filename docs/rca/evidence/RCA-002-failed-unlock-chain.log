@@ -1,0 +1,12 @@
+# RCA-002 evidence - one FAILED unlock, gateway and Body ECU merged in time order
+# Build TCU_GW2_SW_4.12.0 / BCM4_SW_2.7.1, bench run 2026-09-18T08:09Z
+# req=13e161f6-2b2f-474e-ad43-0445cc484bea
+
+2026-09-18T08:09:01.327237Z 000002.548 TCU1 TCU  CMD  INFO  0x000A remote command received req=13e161f6-2b2f-474e-ad43-0445cc484bea command=UNLOCK params={}
+2026-09-18T08:09:01.332890Z 000002.554 TCU1 TCU  GRPC INFO  0x000B SetDoorLock -> req=13e161f6-2b2f-474e-ad43-0445cc484bea deadline_ms=600 peer=body-ecu:50051
+2026-09-18T08:09:01.345192Z 000002.604 BCM4 BODY LOCK INFO  0x0007 SetDoorLock received req=13e161f6-2b2f-474e-ad43-0445cc484bea action=UNLOCK actuation_ms=749
+2026-09-18T08:09:01.946997Z 000003.206 BCM4 BODY LOCK WARN  0x0008 requester cancelled the stream, actuation continues req=13e161f6-2b2f-474e-ad43-0445cc484bea action=UNLOCK
+2026-09-18T08:09:01.952923Z 000003.174 TCU1 TCU  GRPC ERROR 0x000C SetDoorLock failed req=13e161f6-2b2f-474e-ad43-0445cc484bea grpc_code=DEADLINE_EXCEEDED elapsed_ms=620 detail=Deadline Exceeded
+2026-09-18T08:09:01.970136Z 000003.191 TCU1 TCU  CMD  ERROR 0x000D command finished req=13e161f6-2b2f-474e-ad43-0445cc484bea command=UNLOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=637
+2026-09-18T08:09:01.998350Z 000003.219 TCU1 TCU  CLD  DEBUG 0x000E result reported to backend req=13e161f6-2b2f-474e-ad43-0445cc484bea http=204
+2026-09-18T08:09:02.106467Z 000003.365 BCM4 BODY LOCK INFO  0x000A SetDoorLock done req=13e161f6-2b2f-474e-ad43-0445cc484bea doors_locked=False elapsed_ms=761
