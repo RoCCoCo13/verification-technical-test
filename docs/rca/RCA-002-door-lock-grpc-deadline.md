@@ -3,9 +3,9 @@
 | Field | Value |
 |---|---|
 | Requirement(s) violated | **REQ-LCK-003** (0 failures over 20 cycles; a `FAILED` command shall not have changed the state), **REQ-NET-001** (no `SetDoorLock` stream cancelled by the gateway), **REQ-LOG-002** (no `ERROR` in a nominal flow) |
-| Severity | **S2 — function degraded, security-relevant.** The cloud's belief about whether the vehicle is locked is wrong on ~30 % of commands |
+| Severity | **S2 — function degraded, security-relevant.** The cloud's belief about whether the vehicle is locked is wrong on 27–43 % of commands, depending on the sample |
 | Component suspected | **Gateway calibration** `TCU_GW2_CAL_P4.12.0`, parameter `door_lock_ack_timeout_ms` |
-| Reproducibility | **Intermittent, high rate** — 12 of 40 commands (30 %) in a 20-cycle campaign; deterministic in mechanism |
+| Reproducibility | **Intermittent, high rate** — 17 of 40 commands (42.5 %) in the delivered 20-cycle campaign; 30 % and 27.5 % in two earlier runs; deterministic in mechanism |
 | Build | TCU_GW2_SW_4.12.0, CVB_API_1.8.3, BCM4_SW_2.7.1 |
 | Detected by | `Twenty Lock Unlock Cycles Complete Without A Single Failure`, `A Failed Lock Command Leaves The Vehicle State Untouched`, `No Door Lock Stream Is Cancelled By The Gateway`, `Nominal Flows Produce No Errors In The Gateway Log` |
 
@@ -21,8 +21,9 @@ locked. Or the app says *"could not unlock"*; the car is now unlocked and standi
 is next to it. In both directions, the state the cloud believes and the state of the vehicle are
 opposite, and the customer acts on the wrong one.
 
-Measured over a 20-cycle campaign (40 commands): **12 `FAILED`, all with reason `ECU_TIMEOUT`,
-a 30 % failure rate**, against a requirement of **zero**.
+Measured over a 20-cycle campaign (40 commands): **17 `FAILED`, all with reason `ECU_TIMEOUT`,
+a 42.5 % failure rate**, against a requirement of **zero**. Three independent campaigns gave
+42.5 %, 30 % and 27.5 % — the rate varies with the sample, the mechanism does not.
 
 ## 2. Reproduction steps
 
@@ -54,7 +55,7 @@ Note `elapsed_ms` clustering just above **600**. That number is the whole case.
 The 20-cycle campaign returns a single distinct failure reason:
 
 ```
-12 of 40 lock/unlock commands failed (30.0 %), reasons ['ECU_TIMEOUT']; REQ-LCK-003 allows 0
+17 of 40 lock/unlock commands failed (42.5 %), reasons ['ECU_TIMEOUT']; REQ-LCK-003 allows 0
 ```
 
 One reason, not a scatter, which already argues for one mechanism rather than bench noise.
@@ -63,7 +64,7 @@ The second clause of REQ-LCK-003 is violated in the same campaign. The test capt
 door state immediately before a command, waits for the actuator to settle, and reads it again:
 
 ```
-command 902ec83c-5d17-40ea-91bd-3593638cf958 was reported FAILED (ECU_TIMEOUT)
+command fd132d0d-25b9-4155-be20-e8caca9eacb4 was reported FAILED (ECU_TIMEOUT)
 but the Body ECU door state changed from True to False
 ```
 
@@ -95,8 +96,8 @@ grep -o "actuation_ms=[0-9]*" traces/logs/body_ecu.dlt | cut -d= -f2 | sort -n
 
 Observed actuation times span **270–749 ms**, straddling the 600 ms deadline. Every actuation above
 600 ms produces a `FAILED` command, so the failure rate is simply the fraction of the actuation
-distribution lying above the deadline — which is why the measured 30 % over 40 commands is stable
-and reproducible rather than erratic. The rate is a direct consequence of the calibrated value, and
+distribution lying above the deadline — which is why the measured rate stays in the same band
+(27.5–42.5 % across three campaigns) rather than being erratic. The rate is a direct consequence of the calibrated value, and
 it will change with that value alone.
 
 Note the other two domains are calibrated at 1500 ms and neither shows this failure mode, which
@@ -131,10 +132,14 @@ These `ERROR` entries also violate **REQ-LOG-002** independently — a nominal l
 provocation, produces two `ERROR`-level entries in the gateway log:
 
 ```
-gateway logged 2 ERROR entries during a nominal flow:
- ... GRPC ERROR SetDoorLock failed ... grpc_code=DEADLINE_EXCEEDED elapsed_ms=607 ...
- ... CMD  ERROR command finished ... result=FAILED reason=ECU_TIMEOUT elapsed_ms=611
+gateway logged 12 ERROR entries during a nominal flow:
+2026-09-18T08:40:08.282387Z TCU1 TCU  GRPC ERROR 0x137E SetDoorLock failed req=a861b905-... grpc_code=DEADLINE_EXCEEDED elapsed_ms=621 detail=Deadline Exceeded
+2026-09-18T08:40:08.296114Z TCU1 TCU  CMD  ERROR 0x137F command finished req=a861b905-... command=UNLOCK result=FAILED reason=ECU_TIMEOUT ...
+(10 further ERROR lines of the same two kinds)
 ```
+
+Twelve `ERROR` entries across five passes of the documented happy paths, with no fault injected of
+any kind.
 
 ### 3.4 Network trace — the decisive evidence
 
@@ -214,10 +219,10 @@ actuation, leaving the cloud's view of the vehicle contradicting the vehicle.
 
 | Area | Impact |
 |---|---|
-| **Security** | The cloud's record of whether the vehicle is locked is wrong on ~30 % of commands. A user told "unlock failed" walks away from an unlocked car. This is the most serious consequence. |
+| **Security** | The cloud's record of whether the vehicle is locked is wrong on roughly a third of commands (27–43 % measured). A user told "unlock failed" walks away from an unlocked car. This is the most serious consequence. |
 | **Customer** | ~1 in 3 lock/unlock operations reports a failure that did not happen. Users will retry, doubling the actuations and the chance of leaving the car in the state they did not intend. |
 | **Function** | The doors do actuate, so the physical function works — which makes the defect harder to notice in manual testing and easier to dismiss as "the app being slow". |
-| **Fleet / telematics** | Any downstream system consuming command outcomes (service history, insurance telematics, fleet dashboards, "is my car locked" widgets) receives a 30 % false-failure rate. |
+| **Fleet / telematics** | Any downstream system consuming command outcomes (service history, insurance telematics, fleet dashboards, "is my car locked" widgets) receives a false-failure rate of roughly a third. |
 | **Diagnosability** | Nominal operation floods the gateway log with `ERROR` entries (REQ-LOG-002), so real errors are buried in expected ones. |
 | **Retry logic** | Any automatic retry built on this outcome will actuate the doors a second time, potentially reversing the user's intent. |
 

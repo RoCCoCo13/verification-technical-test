@@ -13,9 +13,10 @@ unchanged; everything below describes what I added.
 **Do not release to vehicle testing.** The automated suite covers all 25 requirements and finds
 **six defects**, two of them S2. Remote charging **cannot be stopped** — the command is discarded
 inside the gateway, never reaches a terminal state, and the vehicle keeps charging. Central locking
-reports **`FAILED` on ~30 % of commands while the doors actuate anyway**, so the cloud's belief about
-whether the car is secured is wrong on a third of operations. The supplier's declared known issue
-KI-217 was measured and **confirmed as not a defect** (6.56 % against a 10 % limit). Full reasoning
+reports **`FAILED` on 42.5 % of commands while the doors actuate anyway**, so the cloud's belief
+about whether the car is secured is wrong on a large fraction of operations. The supplier's declared known issue
+KI-217 was measured over two independent samples and **confirmed as not a defect** (4.84 % and
+6.56 %, against a 10 % limit). Full reasoning
 and exit criteria: `docs/TEST_STRATEGY.md` §7.
 
 ---
@@ -137,7 +138,7 @@ interfaces.
   as vehicle state (RCA-004), so a suite that trusted `/vehicle/status` would have passed the climate
   domain. Cross-interface comparison is what made two defects visible at all.
 - **Intermittent behaviour is measured, never retried.** Campaigns collect N samples and assert on
-  the resulting rate, so the report says *"12 of 40 commands failed (30 %), reason `ECU_TIMEOUT`"*
+  the resulting rate, so the report says *"17 of 40 commands failed (42.5 %), reason `ECU_TIMEOUT`"*
   rather than going green on a lucky run. `Wait Until Keyword Succeeds` is used only where the value
   polled is monotonic for a single command.
 - **Log assertions are scoped to a `since` mark** taken at each suite's reset. The `.dlt` files
@@ -152,7 +153,8 @@ interfaces.
    on the golden capture, and each control is a **test in its own right**, so if the reference ever
    stopped being clean the suite would say so rather than silently comparing against a bad baseline.
 2. **The four bench scenarios represent nominal use.** REQ-LOG-002's "nominal flow" is exercised as
-   one pass of each documented happy path.
+   five passes of each documented happy path — five rather than one so the verdict does not depend
+   on whether an intermittent fault happened to fire during a single pass.
 3. **`GNSS` and `NET` gateway contexts are background noise**, per `docs/ARCHITECTURE.md`, and are
    excluded from the REQ-LOG-002 ERROR check. No other context is excluded.
 4. **Absolute timings are bench-specific.** The bench is containerised, so latency *ratios* and
@@ -189,6 +191,24 @@ exercise is testing, and I got it wrong once before getting it right.
   sufficient here and keeps the library readable.
 - I did not test TLS, OTA, HMI behaviour, or load beyond the stated latency budgets — out of scope
   per `docs/TEST_STRATEGY.md` §1.
+
+**The delivered run:** `results/` holds a real run against this bench — **50 tests, 36 passed,
+14 failed**, every failure traceable to one of the six RCAs. Requirement coverage is 25 of 25
+(`python tools/traceability.py results/output.xml`).
+
+**Two late corrections worth recording**, both found by reading the delivered reports rather than by
+being told:
+
+- `Nominal Flows Produce No Errors In The Gateway Log` (REQ-LOG-002) passed on one run and failed on
+  another. That was my test being sample-dependent, not the product changing: it only sees an ERROR
+  when a lock command happens to exceed the deadline, so a single nominal pass cleared roughly half
+  the time. It now drives five passes and asserts once on everything collected. A gate that flips
+  between runs is worse than no gate.
+- `Lock Command Locks The Doors On Every Interface` (REQ-LCK-001) was asserting the command
+  *outcome*, which belongs to REQ-LCK-003. That mis-attributed RCA-002 to the wrong requirement and
+  made REQ-LCK-001 flip with the same intermittency. REQ-LCK-001/002 now own the resulting vehicle
+  state and REQ-LCK-003 owns the reported outcome and the consistency between them, which is what
+  the requirements actually say.
 
 **Time spent:** approximately 4 hours, within the suggested 3–5 hour window.
 

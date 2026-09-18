@@ -1,0 +1,460 @@
+{
+  "label": "ci",
+  "backend": "http://backend:8000",
+  "started": "2026-09-18T08:08:59.242Z",
+  "scenarios": {
+    "S01_lock_unlock_cycles": {
+      "pcap": "/traces/pcap/scenarios/ci/S01_lock_unlock_cycles.pcap",
+      "started": "2026-09-18T08:09:00.298Z",
+      "finished": "2026-09-18T08:09:20.306Z",
+      "doc": "Central locking: n unlock/lock cycles with command lifecycle polling.",
+      "events": [
+        {
+          "t": "2026-09-18T08:08:59.297Z",
+          "kind": "RESET",
+          "http": 200
+        },
+        {
+          "t": "2026-09-18T08:09:01.359Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "13e161f6-2b2f-474e-ad43-0445cc484bea",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:02.158Z",
+          "kind": "COMMAND",
+          "request_id": "13e161f6-2b2f-474e-ad43-0445cc484bea",
+          "status": "FAILED",
+          "reason": "ECU_TIMEOUT",
+          "elapsed_ms": 637
+        },
+        {
+          "t": "2026-09-18T08:09:02.732Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 200,
+          "request_id": "acf3ab8d-43d4-4003-af26-353582b6683f",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:03.274Z",
+          "kind": "COMMAND",
+          "request_id": "acf3ab8d-43d4-4003-af26-353582b6683f",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 467
+        },
+        {
+          "t": "2026-09-18T08:09:03.817Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "c2344b66-e6ab-48e9-8e14-3ebaecf9b557",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:04.355Z",
+          "kind": "COMMAND",
+          "request_id": "c2344b66-e6ab-48e9-8e14-3ebaecf9b557",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 292
+        },
+        {
+          "t": "2026-09-18T08:09:04.921Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 200,
+          "request_id": "dc9505a5-3b04-4bc7-b609-c9dae9a6de7e",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:05.465Z",
+          "kind": "COMMAND",
+          "request_id": "dc9505a5-3b04-4bc7-b609-c9dae9a6de7e",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 387
+        },
+        {
+          "t": "2026-09-18T08:09:06.020Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "fe9eacd6-615a-42bd-9536-56cd8607b298",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:06.837Z",
+          "kind": "COMMAND",
+          "request_id": "fe9eacd6-615a-42bd-9536-56cd8607b298",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 570
+        },
+        {
+          "t": "2026-09-18T08:09:07.394Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 200,
+          "request_id": "250bdf11-51ce-4144-a286-8f1cafdf1bf3",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:07.947Z",
+          "kind": "COMMAND",
+          "request_id": "250bdf11-51ce-4144-a286-8f1cafdf1bf3",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 527
+        },
+        {
+          "t": "2026-09-18T08:09:08.560Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "ebe6651c-0e25-4f6c-98eb-f0f458f0c1d4",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:09.109Z",
+          "kind": "COMMAND",
+          "request_id": "ebe6651c-0e25-4f6c-98eb-f0f458f0c1d4",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 415
+        },
+        {
+          "t": "2026-09-18T08:09:09.657Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 200,
+          "request_id": "af523428-fd19-4bdf-9e01-91d63fc2f3c9",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:10.196Z",
+          "kind": "COMMAND",
+          "request_id": "af523428-fd19-4bdf-9e01-91d63fc2f3c9",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 418
+        },
+        {
+          "t": "2026-09-18T08:09:10.752Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "b13a071e-15a3-4dba-b34a-0fdee7489dc5",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:11.301Z",
+          "kind": "COMMAND",
+          "request_id": "b13a071e-15a3-4dba-b34a-0fdee7489dc5",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 368
+        },
+        {
+          "t": "2026-09-18T08:09:11.862Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 200,
+          "request_id": "52c36f81-d40f-4263-adf3-5d367de134b8",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:12.680Z",
+          "kind": "COMMAND",
+          "request_id": "52c36f81-d40f-4263-adf3-5d367de134b8",
+          "status": "FAILED",
+          "reason": "ECU_TIMEOUT",
+          "elapsed_ms": 623
+        },
+        {
+          "t": "2026-09-18T08:09:18.691Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": false,
+          "hvac_set": 22.0,
+          "chg": "IDLE",
+          "soc": 42,
+          "seq": 10
+        }
+      ]
+    },
+    "S02_climate_preconditioning": {
+      "pcap": "/traces/pcap/scenarios/ci/S02_climate_preconditioning.pcap",
+      "started": "2026-09-18T08:09:21.404Z",
+      "finished": "2026-09-18T08:09:39.441Z",
+      "doc": "HVAC pre-conditioning session with a half-degree set point, then the user unlocks the car.",
+      "events": [
+        {
+          "t": "2026-09-18T08:09:20.403Z",
+          "kind": "RESET",
+          "http": 200
+        },
+        {
+          "t": "2026-09-18T08:09:22.482Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/start",
+          "http": 200,
+          "request_id": "6f3e5a6c-ffbe-4426-8909-9494bb7bdba7",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:22.764Z",
+          "kind": "COMMAND",
+          "request_id": "6f3e5a6c-ffbe-4426-8909-9494bb7bdba7",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 107
+        },
+        {
+          "t": "2026-09-18T08:09:28.786Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": true,
+          "hvac_set": 22.5,
+          "chg": "IDLE",
+          "soc": 42,
+          "seq": 3
+        },
+        {
+          "t": "2026-09-18T08:09:28.855Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/unlock",
+          "http": 200,
+          "request_id": "a1e62b41-3467-47a5-936c-d4cd3ad539d9",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:29.419Z",
+          "kind": "COMMAND",
+          "request_id": "a1e62b41-3467-47a5-936c-d4cd3ad539d9",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 354
+        },
+        {
+          "t": "2026-09-18T08:09:35.431Z",
+          "kind": "STATUS",
+          "doors_locked": false,
+          "hvac": false,
+          "hvac_set": 22.0,
+          "chg": "IDLE",
+          "soc": 42,
+          "seq": 8
+        },
+        {
+          "t": "2026-09-18T08:09:35.484Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/stop",
+          "http": 200,
+          "request_id": "be9a3d8f-1888-4fab-bc03-255f0c7acdbe",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:35.776Z",
+          "kind": "COMMAND",
+          "request_id": "be9a3d8f-1888-4fab-bc03-255f0c7acdbe",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 83
+        }
+      ]
+    },
+    "S03_charging_session": {
+      "pcap": "/traces/pcap/scenarios/ci/S03_charging_session.pcap",
+      "started": "2026-09-18T08:09:40.563Z",
+      "finished": "2026-09-18T08:10:08.739Z",
+      "doc": "Start charging towards 60 %, observe SOC, stop, observe again.",
+      "events": [
+        {
+          "t": "2026-09-18T08:09:39.562Z",
+          "kind": "RESET",
+          "http": 200
+        },
+        {
+          "t": "2026-09-18T08:09:41.613Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/charging/start",
+          "http": 200,
+          "request_id": "41f9f602-d3d4-4f63-95f2-ee4a914b27df",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:41.917Z",
+          "kind": "COMMAND",
+          "request_id": "41f9f602-d3d4-4f63-95f2-ee4a914b27df",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 74
+        },
+        {
+          "t": "2026-09-18T08:09:48.946Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": false,
+          "hvac_set": 22.0,
+          "chg": "CHARGING",
+          "soc": 43,
+          "seq": 2
+        },
+        {
+          "t": "2026-09-18T08:09:49.015Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/charging/stop",
+          "http": 200,
+          "request_id": "557ffd01-8e40-42ba-a07a-54b070aa24e3",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:09:55.088Z",
+          "kind": "COMMAND",
+          "request_id": "557ffd01-8e40-42ba-a07a-54b070aa24e3",
+          "status": "ACCEPTED",
+          "reason": null,
+          "elapsed_ms": null
+        },
+        {
+          "t": "2026-09-18T08:10:02.098Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": false,
+          "hvac_set": 22.0,
+          "chg": "CHARGING",
+          "soc": 48,
+          "seq": 7
+        },
+        {
+          "t": "2026-09-18T08:10:07.123Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": false,
+          "hvac_set": 22.0,
+          "chg": "CHARGING",
+          "soc": 49,
+          "seq": 8
+        }
+      ]
+    },
+    "S04_api_validation": {
+      "pcap": "/traces/pcap/scenarios/ci/S04_api_validation.pcap",
+      "started": "2026-09-18T08:10:09.835Z",
+      "finished": "2026-09-18T08:10:22.234Z",
+      "doc": "Contract checks: authentication and input boundaries.",
+      "events": [
+        {
+          "t": "2026-09-18T08:10:08.835Z",
+          "kind": "RESET",
+          "http": 200
+        },
+        {
+          "t": "2026-09-18T08:10:10.863Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/vehicle/lock",
+          "http": 401,
+          "note": "no api key"
+        },
+        {
+          "t": "2026-09-18T08:10:10.876Z",
+          "kind": "REST",
+          "method": "GET",
+          "path": "/vehicle/commands/does-not-exist",
+          "http": 404
+        },
+        {
+          "t": "2026-09-18T08:10:10.941Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/start",
+          "http": 200,
+          "request_id": "5bb2c0ff-960e-44be-a2f4-e5c9c1ae80cf",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:10:11.233Z",
+          "kind": "COMMAND",
+          "request_id": "5bb2c0ff-960e-44be-a2f4-e5c9c1ae80cf",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 94
+        },
+        {
+          "t": "2026-09-18T08:10:11.831Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/start",
+          "http": 200,
+          "request_id": "4f67952b-a25d-4fae-a10d-6e66ca88676e",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:10:12.149Z",
+          "kind": "COMMAND",
+          "request_id": "4f67952b-a25d-4fae-a10d-6e66ca88676e",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 109
+        },
+        {
+          "t": "2026-09-18T08:10:12.715Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/start",
+          "http": 200,
+          "request_id": "e6af7996-ccbf-44a1-a37d-d708da70872f",
+          "status": "ACCEPTED"
+        },
+        {
+          "t": "2026-09-18T08:10:13.004Z",
+          "kind": "COMMAND",
+          "request_id": "e6af7996-ccbf-44a1-a37d-d708da70872f",
+          "status": "COMPLETED",
+          "reason": "OK",
+          "elapsed_ms": 89
+        },
+        {
+          "t": "2026-09-18T08:10:19.516Z",
+          "kind": "STATUS",
+          "doors_locked": true,
+          "hvac": true,
+          "hvac_set": 35.0,
+          "chg": "IDLE",
+          "soc": 42,
+          "seq": 6
+        },
+        {
+          "t": "2026-09-18T08:10:19.567Z",
+          "kind": "REST",
+          "method": "POST",
+          "path": "/climate/stop",
+          "http": 200,
+          "request_id": "65e9f639-8f87-4f96-a0f7-7ffb34c0c822",
+          "status": "ACCEPTED"
+        }
+      ]
+    }
+  },
+  "finished": "2026-09-18T08:10:22.234Z"
+}

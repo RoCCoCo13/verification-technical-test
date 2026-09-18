@@ -14,6 +14,13 @@ Suite Setup       Open Bench Session And Reset
 Force Tags        diagnostics    log
 
 
+*** Variables ***
+# REQ-LOG-002 is exercised over several nominal passes rather than one: see the test
+# documentation. 5 passes drive 10 lock/unlock commands, enough for the intermittent
+# deadline fault to appear reliably instead of roughly half the time.
+${NOMINAL_FLOW_PASSES}      5
+
+
 *** Test Cases ***
 A Remote Command Is Traceable Across All Three Nodes
     [Documentation]    REQ-LOG-001: every remote command is traceable through its request_id
@@ -38,13 +45,24 @@ Nominal Flows Produce No Errors In The Gateway Log
     [Documentation]    REQ-LOG-002: nominal lock/unlock, climate and charging flows shall
     ...    produce no ERROR-level entries in the gateway log.
     ...
-    ...    "Nominal" is exercised literally: one pass of each documented happy path, inside a
-    ...    log window opened immediately before. Background GNSS/NET chatter is excluded as
-    ...    unrelated noise (docs/ARCHITECTURE.md), so anything reported here belongs to the
-    ...    remote-command flows themselves.
-    [Tags]    req:REQ-LOG-002
+    ...    "Nominal" is exercised literally: ${NOMINAL_FLOW_PASSES} passes of each documented
+    ...    happy path, inside a log window opened immediately before. Background GNSS/NET
+    ...    chatter is excluded as unrelated noise (docs/ARCHITECTURE.md), so anything reported
+    ...    here belongs to the remote-command flows themselves.
+    ...
+    ...    Several passes rather than one, because on this build the errors come from an
+    ...    *intermittent* fault (RCA-002: a door actuation that exceeds the gRPC deadline). A
+    ...    single pass observes only two lock commands and clears roughly half the time, which
+    ...    would make this test flip between runs in CI - the classic flaky gate that gets
+    ...    ignored. Repeating the nominal flow enlarges the sample so the verdict is stable;
+    ...    the assertion is still made once, on everything collected, and no repetition can
+    ...    turn a bad result green.
+    [Tags]    req:REQ-LOG-002    slow
     ${mark}=    Mark Log Position
-    Run Nominal Flows
+    FOR    ${pass}    IN RANGE    1    ${NOMINAL_FLOW_PASSES} + 1
+        Log    Nominal flow pass ${pass} of ${NOMINAL_FLOW_PASSES}
+        Run Nominal Flows
+    END
     Sleep    2s    reason=let the gateway finish its post-command sync before reading the log
     [Teardown]    Restore Idle Domains
     Gateway Log Should Have No Errors    since=${mark}

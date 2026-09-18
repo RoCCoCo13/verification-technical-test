@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TCU_GW2_SW_4.12.0 Release Validation" tests="50" errors="0" failures="14" skipped="0" time="364.351" timestamp="2026-09-18T08:35:06.449475">
+<testsuite name="01 Smoke" tests="6" errors="0" failures="0" skipped="0" time="4.515" timestamp="2026-09-18T08:35:06.481759">
+<testsuite name="Bench Reachability" tests="6" errors="0" failures="0" skipped="0" time="4.509" timestamp="2026-09-18T08:35:06.485964">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Backend Rest Api Answers" time="0.047">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Backend Reports A Vehicle" time="0.021">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Gateway Answers Over Adb" time="0.463">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Gateway Runs The Release Under Test" time="0.039">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Body Ecu Answers Over Grpc" time="0.011">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.01 Smoke.Bench Reachability" name="Dlt Logs Are Being Written" time="2.857">
+</testcase>
+<properties>
+<property name="Documentation" value="Smoke: every interface of the bench answers before any feature test runs.&#10;&#10;This suite is the entry criterion of the whole campaign. If it is red, the&#10;feature results below it carry no information - a failed lock test means&#10;nothing if the Body ECU was simply unreachable. Keep it fast and keep it&#10;first."/>
+</properties>
+</testsuite>
+</testsuite>
+<testsuite name="02 Api" tests="12" errors="0" failures="3" skipped="0" time="22.510" timestamp="2026-09-18T08:35:10.997556">
+<testsuite name="Api Contract" tests="7" errors="0" failures="1" skipped="0" time="16.179" timestamp="2026-09-18T08:35:11.001363">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="Every Protected Endpoint Rejects A Request Without An Api Key" time="0.120">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="An Invalid Api Key Is Rejected" time="0.011">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="Command Endpoints Answer Within The Latency Budget With A Well Formed Body" time="7.682">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="Every Accepted Command Reaches A Terminal State" time="7.851">
+<failure message="commands that never reached a terminal state:&#10;/charging/stop request_id=0ccf9931-c5bd-4661-8218-cf8a04ba4fda still ACCEPTED after 5s" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="An Unknown Request Id Returns Not Found" time="0.016">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="Vehicle Status Carries The Full Documented Structure" time="0.039">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Api Contract" name="Openapi Document Covers Every Public Endpoint" time="0.045">
+</testcase>
+<properties>
+<property name="Documentation" value="REST API contract of CVB_API_1.8.3: authentication, command response&#10;shape and latency, command lifecycle, error handling and OpenAPI.&#10;&#10;This suite validates the cloud interface *on its own terms*. It does not&#10;look at the vehicle - that is the job of the end-to-end suite. Keeping the&#10;two apart means a failure here points at the backend and nowhere else."/>
+</properties>
+</testsuite>
+<testsuite name="Input Validation" tests="5" errors="0" failures="2" skipped="0" time="6.322" timestamp="2026-09-18T08:35:27.181433">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Input Validation" name="Climate Set Points Outside The Allowed Range Are Rejected" time="1.606">
+<failure message="out-of-range climate set points accepted by the API:&#10;target_temp_c=15.5 -&gt; HTTP 200 (expected 422)&#10;target_temp_c=-5.0 -&gt; HTTP 200 (expected 422)&#10;target_temp_c=28.5 -&gt; HTTP 200 (expected 422)&#10;target_temp_c=35.0 -&gt; HTTP 200 (expected 422)&#10;target_temp_c=100.0 -&gt; HTTP 200 (expected 422)" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Input Validation" name="Climate Set Points Inside The Allowed Range Are Accepted" time="1.055">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Input Validation" name="Charging Targets Outside The Allowed Range Are Rejected" time="0.096">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Input Validation" name="Charging Targets Inside The Allowed Range Are Accepted" time="1.050">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.02 Api.Input Validation" name="A Rejected Climate Set Point Never Reaches The Vehicle" time="2.204">
+<failure message="REQ-CLI-002 violated:&#10;API returned HTTP 200 for 35.0 degC, expected 422&#10;the out-of-range set point was forwarded to the vehicle and journalled: [{'request_id': '711a6dcb-e7e4-4b6c-820e-58fa94ce272c', 'command': 'CLIMATE_START', 'params': {'target_temp_c': 35.0}, 'received_at': 1789720531.3663232, 'state': 'QUEUED'}, {'request_id': '711a6dcb-e7e4-4b6c-820e-58fa94ce272c', 'command': 'CLIMATE_START', 'params': {'target_temp_c': 35.0}, 'received_at': 1789720531.3663232, 'state': 'COMPLETED', 'reason': 'OK', 'elapsed_ms': 60}]" type="AssertionError"/>
+</testcase>
+<properties>
+<property name="Documentation" value="Input validation at the cloud API boundary.&#10;&#10;REQ-CLI-002 and REQ-CHG-003 are not merely about the HTTP status code. Both&#10;state that a rejected value shall **not** be forwarded to the vehicle, so&#10;each test checks the status code at the API *and* the absence of a matching&#10;command in the vehicle's own journal over ADB. An API that returns 422 but&#10;still sends the command would pass a status-code-only test and fail this one."/>
+</properties>
+</testsuite>
+</testsuite>
+<testsuite name="03 E2E" tests="13" errors="0" failures="7" skipped="0" time="114.365" timestamp="2026-09-18T08:35:33.508252">
+<testsuite name="Central Locking" tests="5" errors="0" failures="3" skipped="0" time="39.555" timestamp="2026-09-18T08:35:33.513267">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Central Locking" name="Lock Command Locks The Doors On Every Interface" time="2.483">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Central Locking" name="Unlock Command Unlocks The Doors On Every Interface" time="1.416">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Central Locking" name="Twenty Lock Unlock Cycles Complete Without A Single Failure" time="29.633">
+<failure message="17 of 40 lock/unlock commands failed (42.5 %), reasons ['ECU_TIMEOUT']; REQ-LCK-003 allows 0" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Central Locking" name="A Failed Lock Command Leaves The Vehicle State Untouched" time="3.703">
+<failure message="command fd132d0d-25b9-4155-be20-e8caca9eacb4 was reported FAILED (ECU_TIMEOUT) but the Body ECU door state changed from True to False: True != False" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Central Locking" name="Locking Does Not Disturb Climate Or Charging" time="2.028">
+<failure message="Body ECU state changed where it should not have: ['climate_active: True -&gt; False']" type="AssertionError"/>
+</testcase>
+<properties>
+<property name="Documentation" value="Central locking end to end: cloud command -&gt; gateway VHAL -&gt; Body ECU.&#10;&#10;Each functional test asserts on all three interfaces, because agreement&#10;between them is the requirement (REQ-LCK-001/002), not a bonus. The&#10;reliability campaign at the end runs 20 real cycles and asserts on the&#10;measured outcome distribution: an intermittent fault is quantified, never&#10;retried away.&#10;&#10;Requirements are kept strictly apart. REQ-LCK-001/002 own the resulting&#10;vehicle *state*; REQ-LCK-003 owns the reported command *outcome* and the&#10;consistency between the two. On a build where commands intermittently&#10;report FAILED while the doors actuate correctly, merging the two would&#10;blame the wrong requirement and make the state tests flip between runs."/>
+</properties>
+</testsuite>
+<testsuite name="Climate Preconditioning" tests="4" errors="0" failures="2" skipped="0" time="12.856" timestamp="2026-09-18T08:36:13.069117">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Climate Preconditioning" name="Preconditioning Starts At A Whole Degree Set Point" time="0.483">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Climate Preconditioning" name="Preconditioning Honours A Half Degree Set Point" time="0.554">
+<failure message="requested 22.5 degC (raw 45) but the Body ECU holds raw 44 = 22.0 degC; the 0.5 degC step was lost between the cloud and the ECU: 44 != 45" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Climate Preconditioning" name="Cloud And Body Ecu Agree On The Set Point Once Converged" time="10.592">
+<failure message="backend and Body ECU disagree after convergence:&#10;set point: backend says 22.5 degC, Body ECU holds 22.0 degC (raw 44)" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Climate Preconditioning" name="Preconditioning Stops On Every Interface" time="0.873">
+</testcase>
+<properties>
+<property name="Documentation" value="HVAC pre-conditioning end to end, with emphasis on set-point fidelity.&#10;&#10;The requirements ask for 0.5 degC resolution (REQ-CLI-001) and for the&#10;backend and the Body ECU to agree once converged (REQ-CLI-004). Those are&#10;two different claims and they fail for different reasons, so they are two&#10;tests: one asks &quot;did the car receive what the user asked for?&quot;, the other&#10;asks &quot;does the cloud tell the truth about what the car received?&quot;.&#10;&#10;A suite that only read ``/vehicle/status`` would see neither."/>
+</properties>
+</testsuite>
+<testsuite name="Remote Charging" tests="4" errors="0" failures="2" skipped="0" time="61.946" timestamp="2026-09-18T08:36:25.925814">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Remote Charging" name="Charging Starts And The State Of Charge Rises" time="3.568">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Remote Charging" name="Charging Stops On Command" time="16.085">
+<failure message="Keyword 'Body Ecu State Should Be' failed after retrying for 10 seconds. The last error was: Body ECU charging_state is 'CHARGING', expected 'IDLE': CHARGING != IDLE" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Remote Charging" name="The State Of Charge Stops Rising After A Stop Command" time="13.778">
+<failure message="the battery kept charging after the stop command: SOC went from 43 % to 46 % and the Body ECU is CHARGING: 46 != 43" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.03 E2E.Remote Charging" name="Charging Completes When The Target Is Reached" time="28.103">
+</testcase>
+<properties>
+<property name="Documentation" value="Remote charging end to end: start, stop, and the target-reached transition.&#10;&#10;The stop case is the one that matters. A charging session the user cannot&#10;stop keeps drawing power from the wall and keeps filling the battery past&#10;the point the user chose, so this suite checks the *physical* effect on the&#10;Body ECU (state IDLE and the SOC no longer rising) and not merely the&#10;command record."/>
+</properties>
+</testsuite>
+</testsuite>
+<testsuite name="04 Diagnostics" tests="12" errors="0" failures="2" skipped="0" time="218.297" timestamp="2026-09-18T08:37:27.874092">
+<testsuite name="Ecu Supervision" tests="4" errors="0" failures="0" skipped="0" time="156.279" timestamp="2026-09-18T08:37:27.881250">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Ecu Supervision" name="Heartbeat Latency Warnings Stay Within The Accepted Rate" time="125.627">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Ecu Supervision" name="Heartbeats Are Issued On The Specified Period" time="30.257">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Ecu Supervision" name="The Body Ecu Is Supervised As Online" time="0.052">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Ecu Supervision" name="The Declared Known Issue Is Still Declared In The Release Notes" time="0.025">
+</testcase>
+<properties>
+<property name="Documentation" value="Gateway supervision of the Body ECU, and verification of the supplier's&#10;declared known issue KI-217.&#10;&#10;The release notes declare KI-217 (&quot;Body ECU heartbeat occasionally exceeds&#10;100 ms, cosmetic, no functional impact&quot;) and REQ-ECU-001 sets the acceptance&#10;limit at 10 % of heartbeats. A declared known issue is a claim, not a fact,&#10;so this suite measures the real rate over a sample large enough to mean&#10;something and reports the number either way. Confirming a supplier's claim&#10;with evidence is as much a result as refuting it."/>
+</properties>
+</testsuite>
+<testsuite name="Log Correlation" tests="5" errors="0" failures="2" skipped="0" time="48.424" timestamp="2026-09-18T08:40:04.161657">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Log Correlation" name="A Remote Command Is Traceable Across All Three Nodes" time="1.748">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Log Correlation" name="A Remote Command Is Visible In Logcat On The Gateway" time="0.843">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Log Correlation" name="Nominal Flows Produce No Errors In The Gateway Log" time="39.851">
+<failure message="gateway logged 12 ERROR entries during a nominal flow:&#10;2026-09-18T08:40:08.282387Z 001869.631 TCU1 TCU  GRPC ERROR 0x137E SetDoorLock failed req=a861b905-811e-41cb-bb9c-3b06861f4bad grpc_code=DEADLINE_EXCEEDED elapsed_ms=621 detail=Deadline Exceeded&#10;2026-09-18T08:40:08.296114Z 001869.645 TCU1 TCU  CMD  ERROR 0x137F command finished req=a861b905-811e-41cb-bb9c-3b06861f4bad command=UNLOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=635&#10;2026-09-18T08:40:15.240459Z 001876.589 TCU1 TCU  GRPC ERROR 0x13A6 SetDoorLock failed req=975363df-5be1-4dc2-a191-88130a134e93 grpc_code=DEADLINE_EXCEEDED elapsed_ms=607 detail=Deadline Exceeded&#10;2026-09-18T08:40:15.250472Z 001876.599 TCU1 TCU  CMD  ERROR 0x13A7 command finished req=975363df-5be1-4dc2-a191-88130a134e93 command=LOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=616&#10;2026-09-18T08:40:22.699579Z 001884.048 TCU1 TCU  GRPC ERROR 0x13D3 SetDoorLock failed req=58804ec4-d0f7-4507-aa2e-0ddc27ceca75 grpc_code=DEADLINE_EXCEEDED elapsed_ms=609 detail=Deadline Exceeded&#10;2026-09-18T08:40:22.706302Z 001884.055 TCU1 TCU  CMD  ERROR 0x13D4 command finished req=58804ec4-d0f7-4507-aa2e-0ddc27ceca75 command=LOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=615&#10;2026-09-18T08:40:30.173508Z 001891.524 TCU1 TCU  GRPC ERROR 0x1401 SetDoorLock failed req=69b4626c-071d-429a-9a97-25b60f534473 grpc_code=DEADLINE_EXCEEDED elapsed_ms=607 detail=Deadline Exceeded&#10;2026-09-18T08:40:30.185750Z 001891.537 TCU1 TCU  CMD  ERROR 0x1402 command finished req=69b4626c-071d-429a-9a97-25b60f534473 command=LOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=619&#10;2026-09-18T08:40:30.938906Z 001892.290 TCU1 TCU  GRPC ERROR 0x1409 SetDoorLock failed req=759de4ea-739e-4840-aa48-4fa29c105811 grpc_code=DEADLINE_EXCEEDED elapsed_ms=612 detail=Deadline Exceeded&#10;2026-09-18T08:40:30.945043Z 001892.296 TCU1 TCU  CMD  ERROR 0x140A command finished req=759de4ea-739e-4840-aa48-4fa29c105811 command=UNLOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=618&#10;2026-09-18T08:40:38.354081Z 001899.705 TCU1 TCU  GRPC ERROR 0x1435 SetDoorLock failed req=6c4e2e51-b52d-44a3-9f6b-40f29349bdf6 grpc_code=DEADLINE_EXCEEDED elapsed_ms=608 detail=Deadline Exceeded&#10;2026-09-18T08:40:38.363394Z 001899.714 TCU1 TCU  CMD  ERROR 0x1436 command finished req=6c4e2e51-b52d-44a3-9f6b-40f29349bdf6 command=UNLOCK result=FAILED reason=ECU_TIMEOUT elapsed_ms=617" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Log Correlation" name="The Gateway Never Discards A Command Without Reporting It" time="3.926">
+<failure message="commands the vehicle discarded without reporting a result to the cloud:&#10;/charging/stop (b313cd6b-a676-4a21-a76d-7b7948498521): vehicle journalled DROPPED, cloud still ACCEPTED - no FAILED result was ever reported" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Log Correlation" name="Every Forwarded Command Produces Exactly One Grpc Call" time="1.715">
+</testcase>
+<properties>
+<property name="Documentation" value="Diagnosability: can a field engineer follow one command across the system?&#10;&#10;REQ-LOG-001 and REQ-LOG-002 are not cosmetic. A command that cannot be&#10;traced cannot be diagnosed in the field, and ERROR lines during a nominal&#10;flow are how a supplier's own logs contradict a &quot;works as designed&quot; reply.&#10;&#10;Every query is scoped to the suite's log mark, so these tests assert on&#10;lines this run produced and never on a file left behind by an earlier one."/>
+</properties>
+</testsuite>
+<testsuite name="Vhal Consistency" tests="3" errors="0" failures="0" skipped="0" time="13.583" timestamp="2026-09-18T08:40:52.587367">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Vhal Consistency" name="The Vhal Mirror Matches The Body Ecu In A Non Default State" time="11.488">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Vhal Consistency" name="The Vhal Mirror Follows A Door Lock Change" time="1.723">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.04 Diagnostics.Vhal Consistency" name="Dumpsys Vehicle Agrees With The Vhal Property File" time="0.195">
+</testcase>
+<properties>
+<property name="Documentation" value="Consistency of the gateway VHAL mirror with the Body ECU (REQ-ADB-002).&#10;&#10;The VHAL mirror is what the head unit displays to the driver. If it drifts&#10;from the Body ECU, the car shows one thing and does another. This suite&#10;drives the vehicle into a non-default state first, because a mirror&#10;compared only at factory defaults agrees by accident."/>
+</properties>
+</testsuite>
+</testsuite>
+<testsuite name="05 Network" tests="7" errors="0" failures="2" skipped="0" time="4.627" timestamp="2026-09-18T08:41:06.173309">
+<testsuite name="Backbone Traces" tests="7" errors="0" failures="2" skipped="0" time="4.624" timestamp="2026-09-18T08:41:06.175355">
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="Every Charging Command Reaches The Body Ecu On The Backbone" time="0.663">
+<failure message="charging commands accepted by the cloud that never reached the Body ECU:&#10;/charging/stop (request_id 557ffd01-8e40-42ba-a07a-54b070aa24e3, accepted at 2026-09-18T08:09:49.015Z) never reached the Body ECU" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="Every Climate Command Reaches The Body Ecu On The Backbone" time="0.529">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="Every Locking Command Reaches The Body Ecu On The Backbone" time="1.753">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="No Door Lock Stream Is Cancelled By The Gateway" time="0.492">
+<failure message="the gateway cancelled 2 of 10 SetDoorLock streams with RST_STREAM:&#10;  SetDoorLock stream 11: opened frame 26 at t=0.539s, RST_STREAM from 172.28.0.10 frame 77 at t=1.149s, 609.6 ms after the request&#10;  SetDoorLock stream 61: opened frame 1154 at t=11.041s, RST_STREAM from 172.28.0.10 frame 1201 at t=11.644s, 602.9 ms after the request" type="AssertionError"/>
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="The Reference Bench Shows No Cancelled Door Lock Streams" time="0.333">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="The Reference Bench Forwards Every Charging Command" time="0.329">
+</testcase>
+<testcase classname="TCU_GW2_SW_4.12.0 Release Validation.05 Network.Backbone Traces" name="The Gateway Supervises The Body Ecu On The Backbone" time="0.200">
+</testcase>
+<properties>
+<property name="Documentation" value="In-vehicle backbone analysis from scenario PCAPs.&#10;&#10;The network is the one interface that cannot be talked out of. A REST&#10;command with no matching gRPC call on the backbone proves the vehicle was&#10;never asked; an RST_STREAM proves who gave up on whom and after how long.&#10;&#10;Captures come from the scenario runner (``SCENARIO_LABEL=ci``), which runs&#10;inside the gateway network namespace so all three legs land in one file.&#10;That vantage point has a consequence this suite is built around: the&#10;capture sees **everything** the gateway does, not only the scenario being&#10;recorded. Counting calls per method would therefore be sound only while the&#10;capture has the bench to itself. Instead, each command is correlated by its&#10;``request_id``, which the gateway embeds in the gRPC payload -- a result&#10;that holds whatever else is talking to the bench at the time.&#10;&#10;Every finding is paired with the same measurement on the golden capture in&#10;``traces/reference/``: a clean reference and a dirty build is a difference&#10;in the software, not in the method."/>
+</properties>
+</testsuite>
+</testsuite>
+<properties>
+<property name="Backend" value="CVB_API_1.8.3"/>
+<property name="BodyECU" value="BCM4_SW_2.7.1"/>
+<property name="Capture" value="traces/pcap/scenarios/ci"/>
+<property name="Release" value="TCU_GW2_SW_4.12.0"/>
+</properties>
+</testsuite>

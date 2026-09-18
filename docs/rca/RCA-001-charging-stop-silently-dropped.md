@@ -22,7 +22,7 @@ Concretely:
 - `GET /vehicle/commands/{request_id}` returns `ACCEPTED` **forever**. It never becomes `COMPLETED`
   or `FAILED`, so the app has nothing to display and no error to show.
 - `GET /vehicle/status` continues to report `charging.state: CHARGING` and a rising `soc_percent`.
-- The Body ECU continues to charge. Measured: **SOC rose from 44 % to 46 % in the 8 s following the
+- The Body ECU continues to charge. Measured: **SOC rose from 43 % to 46 % in the 8 s following the
   stop command**, and the charger stays on until the target SOC is reached or the bench is reset.
 
 The user is given no indication that anything went wrong. This is worse than a visible failure:

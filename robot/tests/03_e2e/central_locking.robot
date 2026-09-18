@@ -6,6 +6,12 @@ Documentation     Central locking end to end: cloud command -> gateway VHAL -> B
 ...               reliability campaign at the end runs 20 real cycles and asserts on the
 ...               measured outcome distribution: an intermittent fault is quantified, never
 ...               retried away.
+...
+...               Requirements are kept strictly apart. REQ-LCK-001/002 own the resulting
+...               vehicle *state*; REQ-LCK-003 owns the reported command *outcome* and the
+...               consistency between the two. On a build where commands intermittently
+...               report FAILED while the doors actuate correctly, merging the two would
+...               blame the wrong requirement and make the state tests flip between runs.
 
 Resource          ../../resources/bench.resource
 Library           Collections
@@ -29,8 +35,12 @@ Lock Command Locks The Doors On Every Interface
     Unlock Vehicle And Wait
     ${request_id}=    Lock Vehicle
     ${record}=    Wait Until Command Reaches Terminal State    ${request_id}
-    Should Be Equal As Strings    ${record}[status]    COMPLETED
-    ...    msg=lock command ended ${record}[status] (reason=${record}[reason])
+    # REQ-LCK-001 is about the resulting vehicle *state*, not the reported command
+    # outcome. The outcome is REQ-LCK-003's subject and is asserted there. Keeping them
+    # apart matters on this build: lock commands intermittently report FAILED while the
+    # doors actuate correctly, and folding that into this test would attribute the defect
+    # to the wrong requirement and make this one flip between runs.
+    Log    Command outcome (asserted by REQ-LCK-003, not here): ${record}[status] / ${record}[reason]
     Wait Until Body Ecu Reports        doors_locked    True
     Wait Until Vhal Property Is        DOOR_LOCK       1
     Wait Until Cloud Reports Doors Locked    ${True}
@@ -41,8 +51,8 @@ Unlock Command Unlocks The Doors On Every Interface
     Lock Vehicle And Wait
     ${request_id}=    Unlock Vehicle
     ${record}=    Wait Until Command Reaches Terminal State    ${request_id}
-    Should Be Equal As Strings    ${record}[status]    COMPLETED
-    ...    msg=unlock command ended ${record}[status] (reason=${record}[reason])
+    # See the note in the lock case: the command outcome belongs to REQ-LCK-003.
+    Log    Command outcome (asserted by REQ-LCK-003, not here): ${record}[status] / ${record}[reason]
     Wait Until Body Ecu Reports        doors_locked    False
     Wait Until Vhal Property Is        DOOR_LOCK       0
     Wait Until Cloud Reports Doors Locked    ${False}

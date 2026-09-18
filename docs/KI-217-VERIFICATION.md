@@ -6,7 +6,7 @@
 | Supplier's text | *"Body ECU heartbeat occasionally exceeds 100 ms on the bench (scheduler contention on the BCM-4 simulator). Cosmetic, no functional impact."* |
 | Requirement | REQ-ECU-001 — *"latency above 100 ms shall be logged as WARN … latency warnings shall affect at most 10 % of heartbeats"* |
 | Build | TCU_GW2_SW_4.12.0 / CVB_API_1.8.3 / BCM4_SW_2.7.1 |
-| **Outcome** | **Claim substantiated. Not a defect.** Retained as a watch item. |
+| **Outcome** | **Claim substantiated across two independent samples. Not a defect.** Retained as a watch item. |
 
 This is deliberately **not** an RCA. `docs/REQUIREMENTS.md` instructs "Verify the claim", and the
 measurement supports it. Writing a root cause analysis for a non-defect would misrepresent the
@@ -48,16 +48,21 @@ Test: `Heartbeat Latency Warnings Stay Within The Accepted Rate`
 
 ## 3. Result
 
-| Metric | Measured | Limit | Verdict |
-|---|---|---|---|
-| Sample size | 61 heartbeats | — | — |
-| Heartbeats above 100 ms | 4 | — | — |
-| **Warning rate** | **6.56 %** | ≤ 10 % (REQ-ECU-001) | **within limit** |
-| Minimum latency | 2 ms | — | — |
-| Mean latency | 27.5 ms | — | — |
-| Maximum latency | 192 ms | — | — |
-| Heartbeat period | 2.042 s mean over 14 intervals | 2 s | within tolerance |
-| Consecutive misses | 0 | 3 marks the ECU offline | never approached |
+Delivered run (`results/output.xml`), with an independent earlier run alongside it:
+
+| Metric | Delivered run | Earlier run | Limit | Verdict |
+|---|---|---|---|---|
+| Sample size | 62 heartbeats | 61 heartbeats | — | — |
+| Heartbeats above 100 ms | 3 | 4 | — | — |
+| **Warning rate** | **4.84 %** | **6.56 %** | ≤ 10 % (REQ-ECU-001) | **within limit** |
+| Minimum latency | 5 ms | 2 ms | — | — |
+| Mean latency | 26.9 ms | 27.5 ms | — | — |
+| Maximum latency | 228 ms | 192 ms | — | — |
+| Heartbeat period | 2.027 s over 14 intervals | 2.042 s over 14 | 2 s | within tolerance |
+| Consecutive misses | 0 | 0 | 3 marks the ECU offline | never approached |
+
+Two samples taken hours apart agree on the conclusion and bracket the rate at roughly 5–7 %, which
+is what makes the verdict quotable rather than a single lucky measurement.
 
 The gateway reported the Body ECU as online throughout (`BODY_ECU_ONLINE=True` in the VHAL mirror,
 `ecu_online: true` at `/vehicle/status`), and the backbone capture shows the heartbeat calls
@@ -70,7 +75,7 @@ supervision mechanism was never close to tripping, and no dependent function deg
 
 Two qualifications, stated because they bound the conclusion:
 
-- **The margin is 3.4 percentage points**, not an order of magnitude. The elevated latencies are
+- **The margin is roughly 3–5 percentage points**, not an order of magnitude. The elevated latencies are
   also strikingly regular — the sample shows them at `seq` 17, 34, 51, i.e. every 17th heartbeat,
   which is a periodic pattern rather than random scheduler contention as the note describes. The
   *effect* is within limits; the *characterisation* in the release note looks inaccurate. A
@@ -81,7 +86,7 @@ Two qualifications, stated because they bound the conclusion:
 
 ## 5. Recommendation
 
-1. **Close KI-217 as verified-not-a-defect for this release.** REQ-ECU-001 is met at 6.56 %.
+1. **Close KI-217 as verified-not-a-defect for this release.** REQ-ECU-001 is met, at 4.84 % and 6.56 % across two samples.
 2. **Keep the test in the regression suite.** It asserts against the 10 % limit on every CI run, so
    a regression that pushes the rate over the line fails the pipeline instead of being absorbed into
    an existing known issue — which is the failure mode a declared known issue creates.

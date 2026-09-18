@@ -119,30 +119,30 @@ python tools/traceability.py results/output.xml
 
 | Requirement | Test case(s) | Verdict |
 |---|---|---|
+| REQ-LCK-001 | Lock Command Locks The Doors On Every Interface; Every Locking Command Reaches The Body Ecu On The Backbone | PASS |
 | REQ-API-001 | Every Protected Endpoint Rejects A Request Without An Api Key; An Invalid Api Key Is Rejected | PASS |
 | REQ-API-002 | Command Endpoints Answer Within The Latency Budget With A Well Formed Body | PASS |
-| REQ-API-003 | Every Accepted Command Reaches A Terminal State | **FAIL** → RCA-001 |
+| REQ-API-003 | Every Accepted Command Reaches A Terminal State | **FAIL** &rarr; RCA-001 |
 | REQ-API-004 | An Unknown Request Id Returns Not Found | PASS |
-| REQ-API-005 | Vehicle Status Carries The Full Documented Structure; Backend Reports A Vehicle | PASS |
+| REQ-API-005 | Backend Rest Api Answers; Backend Reports A Vehicle; Vehicle Status Carries The Full Documented Structure | PASS |
 | REQ-API-006 | Openapi Document Covers Every Public Endpoint | PASS |
-| REQ-LCK-001 | Lock Command Locks The Doors On Every Interface | PASS |
 | REQ-LCK-002 | Unlock Command Unlocks The Doors On Every Interface | PASS |
-| REQ-LCK-003 | Twenty Lock Unlock Cycles Complete Without A Single Failure; A Failed Lock Command Leaves The Vehicle State Untouched | **FAIL** → RCA-002 |
-| REQ-LCK-004 | Locking Does Not Disturb Climate Or Charging | **FAIL** → RCA-005 |
-| REQ-CLI-001 | Preconditioning Starts At A Whole Degree Set Point; Preconditioning Honours A Half Degree Set Point | **FAIL** → RCA-003 |
-| REQ-CLI-002 | Climate Set Points Outside/Inside The Allowed Range; A Rejected Climate Set Point Never Reaches The Vehicle | **FAIL** → RCA-006 |
+| REQ-LCK-003 | Twenty Lock Unlock Cycles Complete Without A Single Failure; A Failed Lock Command Leaves The Vehicle State Untouched; No Door Lock Stream Is Cancelled By The Gateway | **FAIL** &rarr; RCA-002 |
+| REQ-LCK-004 | Locking Does Not Disturb Climate Or Charging | **FAIL** &rarr; RCA-005 |
+| REQ-CLI-001 | Preconditioning Starts At A Whole Degree Set Point; Preconditioning Honours A Half Degree Set Point; Every Climate Command Reaches The Body Ecu On The Backbone | **FAIL** &rarr; RCA-003 |
+| REQ-CLI-002 | Climate Set Points Outside The Allowed Range Are Rejected; Climate Set Points Inside The Allowed Range Are Accepted; A Rejected Climate Set Point Never Reaches The Vehicle | **FAIL** &rarr; RCA-006 |
 | REQ-CLI-003 | Preconditioning Stops On Every Interface | PASS |
-| REQ-CLI-004 | Cloud And Body Ecu Agree On The Set Point Once Converged | **FAIL** → RCA-004 |
+| REQ-CLI-004 | Cloud And Body Ecu Agree On The Set Point Once Converged | **FAIL** &rarr; RCA-004 |
 | REQ-CHG-001 | Charging Starts And The State Of Charge Rises | PASS |
-| REQ-CHG-002 | Charging Stops On Command; The State Of Charge Stops Rising After A Stop Command | **FAIL** → RCA-001 |
-| REQ-CHG-003 | Charging Targets Outside/Inside The Allowed Range Are Rejected/Accepted | PASS |
+| REQ-CHG-002 | Charging Stops On Command; The State Of Charge Stops Rising After A Stop Command; Every Charging Command Reaches The Body Ecu On The Backbone | **FAIL** &rarr; RCA-001 |
+| REQ-CHG-003 | Charging Targets Outside The Allowed Range Are Rejected; Charging Targets Inside The Allowed Range Are Accepted | PASS |
 | REQ-CHG-004 | Charging Completes When The Target Is Reached | PASS |
-| REQ-ECU-001 | Heartbeat Latency Warnings Stay Within The Accepted Rate; Heartbeats Are Issued On The Specified Period; The Body Ecu Is Supervised As Online; The Declared Known Issue Is Still Declared; The Gateway Supervises The Body Ecu On The Backbone | PASS — see `docs/KI-217-VERIFICATION.md` |
-| REQ-ECU-002 | The Gateway Never Discards A Command Without Reporting It; Every Forwarded Command Produces Exactly One Grpc Call; Every Charging Command Reaches The Body Ecu On The Backbone | **FAIL** → RCA-001 |
-| REQ-NET-001 | No Door Lock Stream Is Cancelled By The Gateway; The Reference Bench Shows No Cancelled Door Lock Streams | **FAIL** → RCA-002 |
-| REQ-LOG-001 | A Remote Command Is Traceable Across All Three Nodes; A Remote Command Is Visible In Logcat On The Gateway | PASS |
-| REQ-LOG-002 | Nominal Flows Produce No Errors In The Gateway Log | **FAIL** → RCA-002 |
-| REQ-ADB-001 | Gateway Answers Over Adb; Gateway Runs The Release Under Test | PASS |
+| REQ-ECU-001 | Heartbeat Latency Warnings Stay Within The Accepted Rate; Heartbeats Are Issued On The Specified Period; The Body Ecu Is Supervised As Online; The Declared Known Issue Is Still Declared In The Release Notes; The Gateway Supervises The Body Ecu On The Backbone | PASS — see `docs/KI-217-VERIFICATION.md` |
+| REQ-ECU-002 | Every Accepted Command Reaches A Terminal State; Twenty Lock Unlock Cycles Complete Without A Single Failure; The Gateway Never Discards A Command Without Reporting It; Every Forwarded Command Produces Exactly One Grpc Call; Every Charging Command Reaches The Body Ecu On The Backbone; Every Climate Command Reaches The Body Ecu On The Backbone; Every Locking Command Reaches The Body Ecu On The Backbone; The Reference Bench Forwards Every Charging Command | **FAIL** &rarr; RCA-001 |
+| REQ-NET-001 | No Door Lock Stream Is Cancelled By The Gateway; The Reference Bench Shows No Cancelled Door Lock Streams | **FAIL** &rarr; RCA-002 |
+| REQ-LOG-001 | Dlt Logs Are Being Written; A Remote Command Is Traceable Across All Three Nodes; A Remote Command Is Visible In Logcat On The Gateway | PASS |
+| REQ-LOG-002 | Nominal Flows Produce No Errors In The Gateway Log | **FAIL** &rarr; RCA-002 |
+| REQ-ADB-001 | Gateway Answers Over Adb; Gateway Runs The Release Under Test; Body Ecu Answers Over Grpc | PASS |
 | REQ-ADB-002 | The Vhal Mirror Matches The Body Ecu In A Non Default State; The Vhal Mirror Follows A Door Lock Change; Dumpsys Vehicle Agrees With The Vhal Property File | PASS |
 
 **Coverage: 25 of 25 requirements have at least one automated test.** No requirement is marked
@@ -192,7 +192,7 @@ This is the sharpest methodological question on this bench, and it is answered s
 than by judgement:
 
 1. **Measure, then assert.** The lock campaign runs all 20 cycles and asserts on the resulting
-   failure count. It reports *12 of 40 commands failed (30 %), reason `ECU_TIMEOUT`* — a rate, with
+   failure count. It reports *17 of 40 commands failed (42.5 %), reason `ECU_TIMEOUT`* — a rate, with
    a single distinct cause.
 2. **Confirm the mechanism independently.** A rate alone could still be the harness. The PCAP shows
    the gateway sending `RST_STREAM` at **602 ms** every time, against a calibrated deadline of
@@ -233,10 +233,10 @@ interfaces:
    A charging session the customer cannot stop is a functional loss with thermal and energy-billing
    consequences.
 2. **RCA-002 — central locking reports failures it did not have, and moves the doors anyway (S2).**
-   30 % of lock/unlock commands return `FAILED`/`ECU_TIMEOUT` while the doors actuate regardless.
+   42.5 % of lock/unlock commands return `FAILED`/`ECU_TIMEOUT` while the doors actuate regardless.
    The customer is told the car did not lock when it did, or that it did not unlock when it did.
    **This one is security-relevant**: the cloud's belief about whether the vehicle is secured is
-   wrong 30 % of the time.
+   wrong on more than 40 % of commands.
 3. **RCA-004 — the cloud reports the user's request as if it were vehicle state (S3, but
    aggravating).** This is what allowed RCA-003 to remain invisible from the API, and it means the
    backend cannot be trusted as an oracle for the climate domain in the field either.
@@ -246,10 +246,11 @@ and specifically green results on `Every Accepted Command Reaches A Terminal Sta
 Unlock Cycles Complete Without A Single Failure`, `A Failed Lock Command Leaves The Vehicle State
 Untouched` and `No Door Lock Stream Is Cancelled By The Gateway`.
 
-**Not a defect:** KI-217 is confirmed as declared. Measured at **6.56 % of heartbeats above
-100 ms over 61 samples**, against the 10 % REQ-ECU-001 permits. The supplier's assessment is
+**Not a defect:** KI-217 is confirmed as declared. Measured at **4.84 % of heartbeats above
+100 ms over 62 samples** in the delivered run (and 6.56 % over 61 in an independent earlier
+run), against the 10 % REQ-ECU-001 permits. The supplier's assessment is
 supported by evidence — see `docs/KI-217-VERIFICATION.md`. It is retained as a watch item because
-the margin to the limit is only 3.4 points.
+the margin to the limit is only about 5 points and the mechanism is periodic.
 
 ---
 
