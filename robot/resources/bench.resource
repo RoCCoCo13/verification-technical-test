@@ -74,6 +74,6 @@ Get Vehicle Truth
     ${body}=     Get Body Ecu State
     ${truth}=    Create Dictionary    cloud=${cloud}    vhal=${vhal}    body=${body}
     Log    Cloud: ${cloud}
-    Log    VHAL:  ${vhal}
-    Log    Body:  ${body}
+    Log    VHAL: ${vhal}
+    Log    Body: ${body}
     RETURN    ${truth}
